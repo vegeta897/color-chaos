@@ -80,6 +80,7 @@ angular.module('ColorChaos.controllers', [])
             myContext.fillRect(overPixel[0] * pixSize, overPixel[1] * pixSize, pixSize, pixSize);
         }
         
+        jQuery(myCanvas).mouseout(dimPixel);
         jQuery(myCanvas).mousedown(drawOnMouseDown);
         jQuery(myCanvas).mousemove(onMouseMove);
 
