@@ -6,12 +6,18 @@
         <canvas id="canvas1" width="960" height="800">
             
         </canvas>
+        <canvas id="canvas2" width="960" height="800">
+
+        </canvas>
   	</div>
     <!--<div class="row">
         <div class="span6 offset3">
             <button ng-show="fireColors.colors1 && !fireColors.colors1.row1" ng-click="initFirebase()" class="btn btn-primary">Initialize</button>
         </div>
     </div>-->
+    <div class="row" style="height:16px;">
+        <div ng-repeat="color in lastColors" style="width:40px;height:16px;background:{{ color }};float:left"></div>
+    </div>
     <div class="row">
         You've changed {{ yourChanges }} pixels
     </div>
