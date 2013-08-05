@@ -1,2 +1,0 @@
-pixel mouse is over highlights
-canvas bg color
