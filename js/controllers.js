@@ -62,7 +62,6 @@ angular.module('ColorChaos.controllers', [])
 
             // Bresenham's line algorithm. We use this to ensure smooth lines are drawn.
             var offset = $('canvas').offset();
-            console.log(e.pageX, e.pageY);
             var x1 = Math.floor((e.pageX - offset.left) / pixSize),
                 y1 = Math.floor((e.pageY - offset.top) / pixSize);
             
@@ -78,7 +77,9 @@ angular.module('ColorChaos.controllers', [])
             var coords = snapshot.name().split(":");
             myContext.fillStyle = "#" + snapshot.val();
             myContext.fillRect(parseInt(coords[0]) * pixSize, parseInt(coords[1]) * pixSize, pixSize, pixSize);
-            $scope.yourChanges++;
+            $timeout(function() {
+                $scope.yourChanges++;
+            })
         };
         var clearPixel = function(snapshot) {
             var coords = snapshot.name().split(":");
