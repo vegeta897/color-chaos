@@ -1,1 +1,7 @@
-show last x number of colors along bottom, in a horizontal line
+use highlighting canvas to highlight certain areas
+    - options panel at bottom of page for highlighting your own changes
+    
+    
+bugfixes:
+    - fix offset when resizing window
+    - "changed pixel" count global??

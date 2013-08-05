@@ -1,7 +1,7 @@
 /* Controllers */
 
 angular.module('ColorChaos.controllers', [])
-	.controller('ColorGrid', ['$scope', '$timeout', 'utility', function($scope, $timeout, utility) {
+	.controller('ColorGrid', ['$scope', '$timeout', '$filter', 'utility', function($scope, $timeout, $filter, utility) {
         
         $scope.yourChanges = 0; // Tracking how many pixels you've changed
         $scope.lastColors = []; // Tracking your last colors
@@ -95,10 +95,21 @@ angular.module('ColorChaos.controllers', [])
         };
         var clearPixel = function(snapshot) {
             var coords = snapshot.name().split(":");
-            myContext.clearRect(parseInt(coords[0]) * pixSize, parseInt(coords[1]) * pixSize, pixSize, pixSize);
+            myContext.fillStyle = '#222222'; // Canvas bg color
+            myContext.fillRect(parseInt(coords[0]) * pixSize, parseInt(coords[1]) * pixSize, pixSize, pixSize);
         };
         pixelDataRef.on('child_added', drawPixel);
         pixelDataRef.on('child_changed', drawPixel);
         pixelDataRef.on('child_removed', clearPixel);
 
+        // Save canvas as PNG image
+        $scope.saveToImg = function() {
+            console.log('saving!');
+            var timestamp = $filter('date')(new Date(), 'yy-MM-dd_H:mm:ss');
+            myCanvas.toBlob(function(blob) {
+                saveAs(blob, 'canvas-'+timestamp+'.png');
+            })
+        }
+        
+        
     }]);
