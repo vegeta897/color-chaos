@@ -30,7 +30,8 @@ angular.module('ColorChaos.controllers', [])
     }])
     .controller('ColorGridLocal', ['$scope', '$timeout', 'randomColor', function($scope, $timeout, randomColor) {
 
-        
+
+        $scope.yourChanges = 0;
         
         // Set up some globals
         var pixSize = 10, lastPoint = null, mouseDown = 0;
@@ -77,6 +78,7 @@ angular.module('ColorChaos.controllers', [])
             var coords = snapshot.name().split(":");
             myContext.fillStyle = "#" + snapshot.val();
             myContext.fillRect(parseInt(coords[0]) * pixSize, parseInt(coords[1]) * pixSize, pixSize, pixSize);
+            $scope.yourChanges++;
         };
         var clearPixel = function(snapshot) {
             var coords = snapshot.name().split(":");
