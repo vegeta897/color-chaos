@@ -3,6 +3,18 @@
 	  	<h1>Color Chaos</h1>
   	</div>
   	<div class="row">
-  		
+        <h3 ng-hide="fireColors.colors1">Please wait, loading...</h3>
+  		<div style="width:960px;height:10px;" ng-show="fireColors.colors1" ng-repeat="row in viewedColors.colors1">
+             <div ng-repeat="color in row.colors" ng-click="changeColor(row.name,$index)" 
+                  style="float:left;margin-right:1px;margin-bottom:1px;width:9px;height:9px;background:{{ color }};"></div>
+  		</div>
   	</div>
+    <div class="row">
+        <div class="span6 offset3">
+            <button ng-show="viewedColors && !viewedColors.colors1.row1" ng-click="initFirebase()" class="btn btn-primary">Initialize</button>
+        </div>
+    </div>
+    <div ng-show="yourChanges" class="row">
+        You've changed {{ yourChanges }} pixels
+    </div>
 </div>
