@@ -3,6 +3,11 @@
     top: -800px;
 }
 
+h1.span3 {
+    margin-left: 0px;
+    margin-right: 20px;
+}
+
 .top-bar {
     padding-top: 10px;
     text-align: right;

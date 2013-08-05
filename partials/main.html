@@ -22,6 +22,7 @@
         <div ng-repeat="color in lastColors" style="width:40px;height:16px;background:{{ color }};float:left"></div>
     </div>
     <div class="row">
-        You've changed {{ yourChanges }} pixels
+        <div class="span3">You've changed {{ yourChanges }} pixels</div>
+        <div class="span1 pull-right">{{ overPixel[0] }} , {{ overPixel[1] }}</div>
     </div>
 </div>

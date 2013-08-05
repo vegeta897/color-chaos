@@ -3,5 +3,4 @@ use highlighting canvas to highlight certain areas
     
     
 bugfixes:
-    - fix offset when resizing window
     - "changed pixel" count global??
