@@ -76,10 +76,12 @@ angular.module('ColorChaos.controllers', [])
 
         // Add the drawn pixel color to the lastColors array
         var addLastColor = function(color) {
-            if($scope.lastColors.length >= 24) { // Don't exceed 24 last colors
-                $scope.lastColors.pop();
-            }
-            $timeout(function() {$scope.lastColors.unshift('#'+color);});
+            $timeout(function() {
+                if($scope.lastColors.length >= 24) { // Don't exceed 24 last colors
+                    $scope.lastColors.pop();
+                }
+                $scope.lastColors.unshift('#'+color);
+            });
         };
 
         $scope.grabColor = function(c) {
