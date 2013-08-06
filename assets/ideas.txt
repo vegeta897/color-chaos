@@ -1,6 +1,3 @@
 use highlighting canvas to highlight certain areas
     - options panel at bottom of page for highlighting your own changes
     
-    
-bugfixes:
-    - "changed pixel" count global??

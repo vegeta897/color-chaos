@@ -9,13 +9,19 @@ angular.module('ColorChaos.controllers', [])
         var pixSize = 10, mouseDown = 0;
 
         // Create a reference to the pixel data for our canvas
-        var pixelDataRef = new Firebase('https://color-chaos.firebaseio.com');
-        // Get the totalDrawn amount
-        pixelDataRef.child('totalDrawn').once('value', function(data) {
-            $scope.$apply(function() {
-                $scope.allChanges = parseInt(data.val());
+        var pixelDataRef = new Firebase('https://color-chaos.firebaseio.com/canvas1');
+        
+        // Get the totalDrawn Amount
+        var getTotalDrawn = function() {
+            pixelDataRef.child('meta').child('totalDrawn').once('value', function(data) {
+                $scope.$apply(function() {
+                    $scope.allChanges = parseInt(data.val());
+                });
             });
-        })
+        };
+        getTotalDrawn();
+        
+        
         // Set up our canvas
         var myCanvas = document.getElementById('canvas1');
         var myContext = myCanvas.getContext ? myCanvas.getContext('2d') : null;
@@ -50,9 +56,7 @@ angular.module('ColorChaos.controllers', [])
             if($scope.lastColors.length >= 24) { // Don't exceed 24 last colors
                 $scope.lastColors.pop();
             }
-            $scope.$apply(function() {
-                $scope.lastColors.unshift('#'+color);
-            })
+            $scope.lastColors.unshift('#'+color);
         };
         
         // Draw a pixel of random color on the mouse's position
@@ -61,17 +65,13 @@ angular.module('ColorChaos.controllers', [])
             dimPixel(); // Dim the pixel being drawn on
             // Write the pixel into Firebase
             var randomColor = utility.generate();
-            pixelDataRef.child($scope.overPixel[0] + ":" + $scope.overPixel[1]).set(randomColor);
-            var totalDrawn = 0;
-            pixelDataRef.child('totalDrawn').once('value', function(data) {
-                totalDrawn = parseInt(data.val())+1;
-            })
-            pixelDataRef.child('totalDrawn').set(totalDrawn);
-            $timeout(function() {
+            pixelDataRef.child('pixels').child($scope.overPixel[0] + ":" + $scope.overPixel[1]).set(randomColor);
+            pixelDataRef.child('meta').child('totalDrawn').set($scope.allChanges+1);
+            $scope.$apply(function() {
                 addLastColor(randomColor); // Add to last colors
                 $scope.yourChanges++; // Update change count
-                $scope.allChanges = totalDrawn; // Update allChanges count
-            })
+                getTotalDrawn();
+            });
         };
         // Check for mouse moving to new pixel
         var onMouseMove = function(e) {
@@ -121,6 +121,7 @@ angular.module('ColorChaos.controllers', [])
         // Add callbacks that are fired any time the pixel data changes and adjusts the canvas appropriately
         // Note that child_added events will be fired for initial pixel data as well
         var drawPixel = function(snapshot) {
+            getTotalDrawn();
             var coords = snapshot.name().split(":");
             myContext.fillStyle = "#" + snapshot.val();
             myContext.fillRect(parseInt(coords[0]) * pixSize, parseInt(coords[1]) * pixSize, pixSize, pixSize);
@@ -132,9 +133,9 @@ angular.module('ColorChaos.controllers', [])
             myContext.fillRect(parseInt(coords[0]) * pixSize, parseInt(coords[1]) * pixSize, pixSize, pixSize);
         };
         // Firebase listeners
-        pixelDataRef.on('child_added', drawPixel);
-        pixelDataRef.on('child_changed', drawPixel);
-        pixelDataRef.on('child_removed', clearPixel);
+        pixelDataRef.child('pixels').on('child_added', drawPixel);
+        pixelDataRef.child('pixels').on('child_changed', drawPixel);
+        pixelDataRef.child('pixels').on('child_removed', clearPixel);
 
         // Save canvas as PNG image
         $scope.saveToImg = function() {
