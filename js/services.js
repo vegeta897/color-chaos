@@ -10,7 +10,7 @@ angular.module('ColorChaos.services', [])
                 for(var i = 0; i<6; i++) {
                     var index = 0;
                     if(bit2) {
-                        index = Math.floor(Math.random()*8+8)
+                        index = Math.floor(Math.random()*11+5)
                         bit2 = false;
                     } else {
                         index = Math.floor(Math.random()*16)
@@ -18,6 +18,7 @@ angular.module('ColorChaos.services', [])
                     }
                     hexColor = hexColor + hexes[index];
                 }
+                console.log(hexColor);
                 return hexColor;
             },
             generateDark: function() {
@@ -26,7 +27,7 @@ angular.module('ColorChaos.services', [])
                 for(var i = 0; i<6; i++) {
                     var index = 0;
                     if(bit2) {
-                        index = Math.floor(Math.random()*8)
+                        index = Math.floor(Math.random()*5)
                         bit2 = false;
                     } else {
                         index = Math.floor(Math.random()*16)
@@ -34,6 +35,7 @@ angular.module('ColorChaos.services', [])
                     }
                     hexColor = hexColor + hexes[index];
                 }
+                console.log(hexColor);
                 return hexColor;
             },
             rgbToHex: function rgbToHex(r, g, b) {
