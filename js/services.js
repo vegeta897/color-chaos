@@ -4,10 +4,34 @@ angular.module('ColorChaos.services', [])
     .factory('utility', function() {
         var hexes = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
         return {
-            generate: function() {
+            generateLight: function() {
                 var hexColor = '';
+                var bit2 = true;
                 for(var i = 0; i<6; i++) {
-                    var index = Math.floor(Math.random()*16)
+                    var index = 0;
+                    if(bit2) {
+                        index = Math.floor(Math.random()*8+8)
+                        bit2 = false;
+                    } else {
+                        index = Math.floor(Math.random()*16)
+                        bit2 = true;
+                    }
+                    hexColor = hexColor + hexes[index];
+                }
+                return hexColor;
+            },
+            generateDark: function() {
+                var hexColor = '';
+                var bit2 = true;
+                for(var i = 0; i<6; i++) {
+                    var index = 0;
+                    if(bit2) {
+                        index = Math.floor(Math.random()*8)
+                        bit2 = false;
+                    } else {
+                        index = Math.floor(Math.random()*16)
+                        bit2 = true;
+                    }
                     hexColor = hexColor + hexes[index];
                 }
                 return hexColor;

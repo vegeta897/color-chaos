@@ -45,6 +45,7 @@ angular.module('ColorChaos.controllers', [])
         myContext.fillRect(0,0,960,800);
         
         jQuery('body').on('contextmenu', '#canvas2', function(e){ // Prevent right-click on canvas
+            
             return false; 
         });
         
@@ -79,14 +80,33 @@ angular.module('ColorChaos.controllers', [])
             if (!mouseDown || jQuery.sha256($scope.password) != '7fff319b30405ee286b1baf1d433ccfd53fecd100f8e46c7b1177da800930e69') return; 
             dimPixel(); // Dim the pixel being drawn on
             // Write the pixel into Firebase
-            var randomColor = utility.generate();
+            var randomColor = '222222';
+            switch (event.which) {
+                case 1:
+                    console.log('Left mouse button pressed');
+                    randomColor = utility.generateLight();
+                    break;
+                case 2:
+                    event.preventDefault();
+                    console.log('Middle mouse button pressed');
+                    break;
+                case 3:
+                    event.preventDefault();
+                    console.log('Right mouse button pressed');
+                    randomColor = utility.generateDark();
+                    break;
+                default:
+                    console.log('You have a strange mouse');
+            }
+            
             pixelDataRef.child('pixels').child($scope.overPixel[0] + ":" + $scope.overPixel[1]).set(randomColor);
+            getTotalDrawn(); // Make sure local total is accurate
             pixelDataRef.child('meta').child('totalDrawn').set($scope.allChanges+1);
             pixelDataRef.child('meta').child('lastDrawn').set(new Date().getTime());
             $scope.$apply(function() {
                 addLastColor(randomColor); // Add to last colors
                 $scope.yourChanges++; // Update change count
-                getTotalDrawn();
+                getTotalDrawn(); // Refresh total
             });
         };
         

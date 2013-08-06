@@ -1,3 +1,5 @@
 use highlighting canvas to highlight certain areas
     - options panel for highlighting your own changes
     
+left click makes a random bright color, right click makes random dark?
+right click selects a pixel, left click moves it to that spot?
