@@ -5,7 +5,8 @@ angular.module('ColorChaos.controllers', [])
         
         $scope.yourChanges = 0; // Tracking how many pixels you've changed
         $scope.lastColors = []; // Tracking your last colors
-        $scope.overPixel = ['-','-']; // Tracking your coordinates
+        $scope.overPixel = ['-','-']; // Tracking your coordinates'
+        $scope.lastPixel = ['-','-']; // Tracking last pixel placed coordinates
         $scope.password = '';
         var pixSize = 10, mouseDown = 0, grabbing = false, colorToPlace = '';
 
@@ -87,19 +88,23 @@ angular.module('ColorChaos.controllers', [])
                     grabbing = true;
                     $scope.lastColors.splice(i,1);
                     colorToPlace = c.substring(1,7);
+                    jQuery(myCanvas).mousedown();
                     break;
                 }
             }
         };
         
         var drawOnMouseDown = function() {
+            console.log('drawing!');
             // If the mouse button is down or the password is incorrect, cancel
-            if (!mouseDown || jQuery.sha256($scope.password) != '7fff319b30405ee286b1baf1d433ccfd53fecd100f8e46c7b1177da800930e69') return; 
+            if (jQuery.sha256($scope.password) != '7fff319b30405ee286b1baf1d433ccfd53fecd100f8e46c7b1177da800930e69') return; 
             dimPixel(); // Dim the pixel being drawn on
             document.getElementById('canvas2').style.cursor = 'none'; // Hide cursor
             // Write the pixel into Firebase
+            console.log('drawing2!');
             var randomColor = '222222';
             if(!grabbing) { // If we don't have a color grabbed
+                console.log('not grabbing');
                 switch (event.which) { // Figure out which mouse button we're pressing
                     case 1:
                         // left
@@ -134,11 +139,20 @@ angular.module('ColorChaos.controllers', [])
                         // empty
                 }
             }
-            pixelDataRef.child('pixels').child($scope.overPixel[0] + ":" + $scope.overPixel[1]).set(colorToPlace);
+            if(($scope.lastPixel[0] != $scope.overPixel[0] || $scope.lastPixel[1] != $scope.overPixel[1]) && !grabbing) // If we're on a new pixel
+            {
+                $scope.lastColors = [];
+            }
+            if(grabbing) {
+                pixelDataRef.child('pixels').child($scope.lastPixel[0] + ":" + $scope.lastPixel[1]).set(colorToPlace);
+            } else {
+                pixelDataRef.child('pixels').child($scope.overPixel[0] + ":" + $scope.overPixel[1]).set(colorToPlace);
+                $scope.lastPixel = [$scope.overPixel[0],$scope.overPixel[1]];
+            }
             getTotalDrawn(); // Make sure local total is accurate
             pixelDataRef.child('meta').child('totalDrawn').set($scope.allChanges+1);
             pixelDataRef.child('meta').child('lastDrawn').set(new Date().getTime());
-            $scope.$apply(function() {
+            $timeout(function() {
                 if(!grabbing) { addLastColor(randomColor); }; // Add to last colors
                 $scope.yourChanges++; // Update change count
                 getTotalDrawn(); // Refresh total
@@ -179,11 +193,7 @@ angular.module('ColorChaos.controllers', [])
         // Highlight the pixel underneath the mouse
         var highlightPixel = function() {
             // Draw the highlighted color pixel
-            if(grabbing) {
-                overContext.fillStyle = '#'+colorToPlace;
-            } else {
-                overContext.fillStyle = 'rgba(255, 255, 255, 0.15)';
-            }
+            overContext.fillStyle = 'rgba(255, 255, 255, 0.15)';
             overContext.fillRect($scope.overPixel[0] * pixSize, $scope.overPixel[1] * pixSize, pixSize, pixSize);
         };
         // When the mouse button is pressed (on the overCanvas)
