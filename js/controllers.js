@@ -5,14 +5,17 @@ angular.module('ColorChaos.controllers', [])
         
         $scope.yourChanges = 0; // Tracking how many pixels you've changed
         $scope.lastColors = []; // Tracking your last colors
-        $scope.overPixel = [];
-        
-        // Set up some globals
+        $scope.overPixel = ['-','-']; // Tracking your coordinates
         var pixSize = 10, mouseDown = 0;
 
         // Create a reference to the pixel data for our canvas
         var pixelDataRef = new Firebase('https://color-chaos.firebaseio.com');
-
+        // Get the totalDrawn amount
+        pixelDataRef.child('totalDrawn').once('value', function(data) {
+            $scope.$apply(function() {
+                $scope.allChanges = parseInt(data.val());
+            });
+        })
         // Set up our canvas
         var myCanvas = document.getElementById('canvas1');
         var myContext = myCanvas.getContext ? myCanvas.getContext('2d') : null;
@@ -29,8 +32,9 @@ angular.module('ColorChaos.controllers', [])
 
         var overCanvas = document.getElementById('canvas2'); // Define overCanvas for pixel highlighting
         var overContext = overCanvas.getContext ? overCanvas.getContext('2d') : null;
-        console.log(jQuery(overCanvas).offset(),jQuery(myCanvas).offset());
-        alignCanvases(); // Set its position to match the real canvas
+        $timeout(function(){
+            alignCanvases();
+        }, 500); // Set its position to match the real canvas
         
         // Keep track of if the mouse is up or down
         overCanvas.onmousedown = function() { mouseDown = 1; return false; };
@@ -46,16 +50,28 @@ angular.module('ColorChaos.controllers', [])
             if($scope.lastColors.length >= 24) { // Don't exceed 24 last colors
                 $scope.lastColors.pop();
             }
-            $scope.lastColors.unshift('#'+color);
-        }
+            $scope.$apply(function() {
+                $scope.lastColors.unshift('#'+color);
+            })
+        };
         
         // Draw a pixel of random color on the mouse's position
         var drawOnMouseDown = function() {
             if (!mouseDown) return; // If the mouse button is down, cancel
+            dimPixel(); // Dim the pixel being drawn on
             // Write the pixel into Firebase
             var randomColor = utility.generate();
-            addLastColor(randomColor); // Add to last colors
             pixelDataRef.child($scope.overPixel[0] + ":" + $scope.overPixel[1]).set(randomColor);
+            var totalDrawn = 0;
+            pixelDataRef.child('totalDrawn').once('value', function(data) {
+                totalDrawn = parseInt(data.val())+1;
+            })
+            pixelDataRef.child('totalDrawn').set(totalDrawn);
+            $timeout(function() {
+                addLastColor(randomColor); // Add to last colors
+                $scope.yourChanges++; // Update change count
+                $scope.allChanges = totalDrawn; // Update allChanges count
+            })
         };
         // Check for mouse moving to new pixel
         var onMouseMove = function(e) {
@@ -83,7 +99,7 @@ angular.module('ColorChaos.controllers', [])
             $scope.$apply(function() {
                 $scope.overPixel = ['-','-'];
             });
-        }
+        };
         
         // Highlight the pixel underneath the mouse
         var highlightPixel = function() {
@@ -108,9 +124,6 @@ angular.module('ColorChaos.controllers', [])
             var coords = snapshot.name().split(":");
             myContext.fillStyle = "#" + snapshot.val();
             myContext.fillRect(parseInt(coords[0]) * pixSize, parseInt(coords[1]) * pixSize, pixSize, pixSize);
-            $timeout(function() {
-                $scope.yourChanges++; // Update change count
-            })
         };
         // Erase a pixel
         var clearPixel = function(snapshot) {

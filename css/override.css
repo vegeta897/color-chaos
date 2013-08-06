@@ -5,5 +5,10 @@ h1 {
     line-height: 30px;
 }
 
+.no-indent {
+    margin-left: 0px;
+    margin-right: 20px;
+}
+
 /* Media Queries */
 
