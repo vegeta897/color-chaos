@@ -8,6 +8,14 @@
     text-align: right;
 }
 
+.top-bar button.btn {
+    margin-left: 8px;
+}
+
+.top-bar input.input-small {
+    margin-bottom: 0;
+}
+
 .stats {
     padding-top: 4px;
     font-size: 12px;

@@ -1,12 +1,27 @@
 /* Controllers */
 
 angular.module('ColorChaos.controllers', [])
-	.controller('ColorGrid', ['$scope', '$timeout', '$filter', 'utility', function($scope, $timeout, $filter, utility) {
+	.controller('ColorGrid', ['$scope', '$timeout', '$filter', 'localStorageService', 'utility', function($scope, $timeout, $filter, localStorageService, utility) {
         
         $scope.yourChanges = 0; // Tracking how many pixels you've changed
         $scope.lastColors = []; // Tracking your last colors
         $scope.overPixel = ['-','-']; // Tracking your coordinates
+        $scope.password = '';
         var pixSize = 10, mouseDown = 0;
+
+        // Authentication
+        $scope.authenticate = function() {
+            if(jQuery.sha256($scope.password) === '7fff319b30405ee286b1baf1d433ccfd53fecd100f8e46c7b1177da800930e69') {
+                localStorageService.set('password', $scope.password);
+                $scope.authed = true;
+            }
+        };
+        
+        // if password in localstorage exists....
+        if(localStorageService.get('password')) {
+            $scope.password = localStorageService.get('password');
+            $scope.authenticate(); // Check for auth
+        }
 
         // Create a reference to the pixel data for our canvas
         var pixelDataRef = new Firebase('https://color-chaos.firebaseio.com/canvas1');
@@ -23,15 +38,15 @@ angular.module('ColorChaos.controllers', [])
         };
         getTotalDrawn();
         
-        
         // Set up our canvas
         var myCanvas = document.getElementById('canvas1');
         var myContext = myCanvas.getContext ? myCanvas.getContext('2d') : null;
         myContext.fillStyle = '#222222'; // Fill the canvas with gray
         myContext.fillRect(0,0,960,800);
-        if(myContext == null) {
-            alert('Your browser is really old. Get a new one bro');
-        }
+        
+        jQuery('body').on('contextmenu', '#canvas2', function(e){ // Prevent right-click on canvas
+            return false; 
+        });
         
         // Align canvas positions
         var alignCanvases = function() {
@@ -40,10 +55,8 @@ angular.module('ColorChaos.controllers', [])
 
         var overCanvas = document.getElementById('canvas2'); // Define overCanvas for pixel highlighting
         var overContext = overCanvas.getContext ? overCanvas.getContext('2d') : null;
-        $timeout(function(){
-            alignCanvases();
-        }, 500); // Set its position to match the real canvas
-        
+        $timeout(function(){ alignCanvases(); }, 500); // Set its position to match the real canvas
+           
         // Keep track of if the mouse is up or down
         overCanvas.onmousedown = function() { mouseDown = 1; return false; };
         overCanvas.onmouseout = overCanvas.onmouseup = function() {
@@ -60,10 +73,10 @@ angular.module('ColorChaos.controllers', [])
             }
             $scope.lastColors.unshift('#'+color);
         };
-        
-        // Draw a pixel of random color on the mouse's position
+
         var drawOnMouseDown = function() {
-            if (!mouseDown) return; // If the mouse button is down, cancel
+            // If the mouse button is down or the password is incorrect, cancel
+            if (!mouseDown || jQuery.sha256($scope.password) != '7fff319b30405ee286b1baf1d433ccfd53fecd100f8e46c7b1177da800930e69') return; 
             dimPixel(); // Dim the pixel being drawn on
             // Write the pixel into Firebase
             var randomColor = utility.generate();
@@ -76,6 +89,7 @@ angular.module('ColorChaos.controllers', [])
                 getTotalDrawn();
             });
         };
+        
         // Check for mouse moving to new pixel
         var onMouseMove = function(e) {
             // Get pixel location
@@ -97,6 +111,7 @@ angular.module('ColorChaos.controllers', [])
                 overContext.clearRect($scope.overPixel[0] * pixSize, $scope.overPixel[1] * pixSize, pixSize, pixSize);
             }
         };
+        // When the mouse leaves the canvas
         var onMouseOut = function() {
             dimPixel();
             $scope.$apply(function() {
@@ -142,7 +157,6 @@ angular.module('ColorChaos.controllers', [])
 
         // Save canvas as PNG image
         $scope.saveToImg = function() {
-            console.log('saving!');
             var timestamp = $filter('date')(new Date(), 'yy-MM-dd_H:mm:ss');
             myCanvas.toBlob(function(blob) {
                 saveAs(blob, 'canvas-'+timestamp+'.png');

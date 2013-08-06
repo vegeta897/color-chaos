@@ -2,16 +2,16 @@
   	<div class="row">
 	  	<h1 class="span3 no-indent">Color Chaos</h1>
         <div class="span9 top-bar">
+            <input ng-hide="authed" placeholder="password" type="text" class="input-small" ng-model="password">
+            <button ng-hide="authed" class="btn btn-info" ng-click="authenticate()">Let me draw!</button>
             <button class="btn" ng-click="saveToImg()">Save Image</button>
         </div>
   	</div>
   	<div class="row">
-        <canvas id="canvas1" width="960" height="800">
-            
+        <canvas id="canvas1" width="960" height="800"> <!-- Main canvas -->
+            Your browser doesn't support canvases. <a href="http://www.google.com/chrome">Get a better one.</a>
         </canvas>
-        <canvas id="canvas2" width="960" height="800">
-
-        </canvas>
+        <canvas id="canvas2" width="960" height="800"></canvas> <!-- Overlay canvas -->
   	</div>
     <div class="row" style="height:16px;width:960px;">
         <div ng-repeat="color in lastColors" style="width:40px;height:16px;float:left;">
