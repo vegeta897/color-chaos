@@ -79,7 +79,7 @@ angular.module('ColorChaos.controllers', [])
             if($scope.lastColors.length >= 24) { // Don't exceed 24 last colors
                 $scope.lastColors.pop();
             }
-            $scope.lastColors.unshift('#'+color);
+            $timeout(function() {$scope.lastColors.unshift('#'+color);});
         };
 
         $scope.grabColor = function(c) {
@@ -107,7 +107,10 @@ angular.module('ColorChaos.controllers', [])
                 switch (event.which) { // Figure out which mouse button we're pressing
                     case 1:
                         // left
-                        randomColor = utility.generateLight();
+                        for(var i=0; i<3; i++) {
+                            randomColor = utility.generateLight();
+                            addLastColor(randomColor);
+                        }
                         break;
                     case 2:
                         event.preventDefault();
@@ -116,7 +119,10 @@ angular.module('ColorChaos.controllers', [])
                     case 3:
                         event.preventDefault();
                         // right
-                        randomColor = utility.generateDark();
+                        for(var i=0; i<3; i++) {
+                            randomColor = utility.generateDark();
+                            addLastColor(randomColor);
+                        }
                         break;
                     default:
                         console.log('You have a strange mouse');
@@ -152,7 +158,6 @@ angular.module('ColorChaos.controllers', [])
             pixelDataRef.child('meta').child('totalDrawn').set($scope.allChanges+1);
             pixelDataRef.child('meta').child('lastDrawn').set(new Date().getTime());
             $timeout(function() {
-                if(!grabbing) { addLastColor(randomColor); }; // Add to last colors
                 $scope.yourChanges++; // Update change count
                 getTotalDrawn(); // Refresh total
                 grabbing = false;
