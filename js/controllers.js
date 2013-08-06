@@ -63,6 +63,7 @@ angular.module('ColorChaos.controllers', [])
         var overCanvas = document.getElementById('canvas2'); // Define overCanvas for pixel highlighting
         var overContext = overCanvas.getContext ? overCanvas.getContext('2d') : null;
         $timeout(function(){ alignCanvases(); }, 500); // Set its position to match the real canvas
+
            
         // Keep track of if the mouse is up or down
         overCanvas.onmousedown = function() { mouseDown = 1; return false; };
@@ -85,6 +86,7 @@ angular.module('ColorChaos.controllers', [])
             // If the mouse button is down or the password is incorrect, cancel
             if (!mouseDown || jQuery.sha256($scope.password) != '7fff319b30405ee286b1baf1d433ccfd53fecd100f8e46c7b1177da800930e69') return; 
             dimPixel(); // Dim the pixel being drawn on
+            document.getElementById('canvas2').style.cursor = 'none'; // Hide cursor
             // Write the pixel into Firebase
             var randomColor = '222222';
             switch (event.which) {
@@ -124,6 +126,7 @@ angular.module('ColorChaos.controllers', [])
                 y = Math.floor((e.pageY - offset.top) / pixSize);
             // If the pixel location has changed
             if($scope.overPixel[0] != x || $scope.overPixel[1] != y) {
+                document.getElementById('canvas2').style.cursor = 'default'; // Show cursor
                 dimPixel(); // Dim the last pixel
                 $scope.$apply(function() {
                     $scope.overPixel = [x,y]; // Update the pixel location we're now over
