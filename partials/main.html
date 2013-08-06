@@ -4,6 +4,7 @@
         <div class="span9 top-bar">
             <input ng-hide="authed" placeholder="password" type="text" class="input-small" ng-model="password">
             <button ng-hide="authed" class="btn btn-info" ng-click="authenticate()">Let me draw!</button>
+            <button class="btn btn-error" ng-click="clearCache()"><i class="icon-exclamation-sign"></i></button>
             <button class="btn" ng-click="saveToImg()">Save Image</button>
         </div>
   	</div>

@@ -22,6 +22,10 @@ angular.module('ColorChaos.controllers', [])
             $scope.password = localStorageService.get('password');
             $scope.authenticate(); // Check for auth
         }
+        
+        $scope.clearCache = function() {
+            localStorageService.clearAll();
+        }
 
         // Create a reference to the pixel data for our canvas
         var pixelDataRef = new Firebase('https://color-chaos.firebaseio.com/canvas1');
