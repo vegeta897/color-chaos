@@ -13,9 +13,11 @@ angular.module('ColorChaos.controllers', [])
         
         // Get the totalDrawn Amount
         var getTotalDrawn = function() {
-            pixelDataRef.child('meta').child('totalDrawn').once('value', function(data) {
+            pixelDataRef.child('meta').once('value', function(data) {
                 $scope.$apply(function() {
-                    $scope.allChanges = parseInt(data.val());
+                    $scope.allChanges = parseInt(data.val().totalDrawn);
+                    var utcSeconds = data.val().lastDrawn;
+                    $scope.lastChange = new Date(utcSeconds);
                 });
             });
         };
@@ -67,6 +69,7 @@ angular.module('ColorChaos.controllers', [])
             var randomColor = utility.generate();
             pixelDataRef.child('pixels').child($scope.overPixel[0] + ":" + $scope.overPixel[1]).set(randomColor);
             pixelDataRef.child('meta').child('totalDrawn').set($scope.allChanges+1);
+            pixelDataRef.child('meta').child('lastDrawn').set(new Date().getTime());
             $scope.$apply(function() {
                 addLastColor(randomColor); // Add to last colors
                 $scope.yourChanges++; // Update change count

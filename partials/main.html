@@ -19,9 +19,10 @@
         </div>
     </div>
     <div class="row">
-        <div class="span4 no-indent">
-            You've changed {{ yourChanges }} pixels<br>
-            <span ng-show="allChanges">Everyone has changed {{ allChanges }} pixels</span>
+        <div class="span4 stats no-indent">
+            <span class="muted">You've changed</span>&nbsp; {{ yourChanges }} pixels<br>
+            <span ng-show="allChanges"><span class="muted">Everyone has changed</span>&nbsp; {{ allChanges }} pixels<br></span>
+            <span ng-show="lastChange"><span class="muted">Last changed:</span>&nbsp; {{ lastChange | date:'medium' }}</span>
         </div>
         <div class="span1 text-right pull-right">{{ overPixel[0] }} , {{ overPixel[1] }}</div>
     </div>
