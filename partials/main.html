@@ -15,8 +15,8 @@
         <canvas id="canvas2" width="960" height="800"></canvas> <!-- Overlay canvas -->
   	</div>
     <div class="row" style="height:16px;width:960px;">
-        <div ng-repeat="color in lastColors" style="width:40px;height:16px;float:left;">
-            <div style="width:40px;height:16px;background:{{ color }};"></div>
+        <div class="palette-container" ng-repeat="color in lastColors" style="width:40px;height:16px;float:left;">
+            <div ng-click="grabColor(color)" style="width:40px;height:16px;background:{{ color }};"></div>
         </div>
     </div>
     <div class="row">

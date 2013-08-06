@@ -46,7 +46,6 @@ angular.module('ColorChaos.services', [])
                     sat: (Math.random()),
                     val: (Math.random()*0.65+0.35)
                 };
-                console.log(hsv, hsvToRGB(hsv));
                 return hsvToRGB(hsv);
             },
             generateDark: function() {
@@ -55,7 +54,6 @@ angular.module('ColorChaos.services', [])
                     sat: (Math.random()),
                     val: (Math.random()*0.35)
                 };
-                console.log(hsv, hsvToRGB(hsv));
                 return hsvToRGB(hsv);
             },
             rgbToHex: function rgbToHex(r, g, b) {
