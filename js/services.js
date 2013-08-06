@@ -3,40 +3,60 @@
 angular.module('ColorChaos.services', [])
     .factory('utility', function() {
         var hexes = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
+
+        var hsvToRGB = function(hsv) {
+            var h = hsv.hue, s = hsv.sat, v = hsv.val;
+            var rgb, i, data = [];
+            if (s === 0) {
+                rgb = [v,v,v];
+            } else {
+                h = h / 60;
+                i = Math.floor(h);
+                data = [v*(1-s), v*(1-s*(h-i)), v*(1-s*(1-(h-i)))];
+                switch(i) {
+                    case 0:
+                        rgb = [v, data[2], data[0]];
+                        break;
+                    case 1:
+                        rgb = [data[1], v, data[0]];
+                        break;
+                    case 2:
+                        rgb = [data[0], v, data[2]];
+                        break;
+                    case 3:
+                        rgb = [data[0], data[1], v];
+                        break;
+                    case 4:
+                        rgb = [data[2], data[0], v];
+                        break;
+                    default:
+                        rgb = [v, data[0], data[1]];
+                        break;
+                }
+            }
+            return rgb.map(function(x){
+                return ("0" + Math.round(x*255).toString(16)).slice(-2);
+            }).join('');
+        };
+        
         return {
             generateLight: function() {
-                var hexColor = '';
-                var bit2 = true;
-                for(var i = 0; i<6; i++) {
-                    var index = 0;
-                    if(bit2) {
-                        index = Math.floor(Math.random()*11+5)
-                        bit2 = false;
-                    } else {
-                        index = Math.floor(Math.random()*16)
-                        bit2 = true;
-                    }
-                    hexColor = hexColor + hexes[index];
-                }
-                console.log(hexColor);
-                return hexColor;
+                var hsv = {
+                    hue: Math.floor(Math.random()*360),
+                    sat: (Math.random()),
+                    val: (Math.random()*0.65+0.35)
+                };
+                console.log(hsv, hsvToRGB(hsv));
+                return hsvToRGB(hsv);
             },
             generateDark: function() {
-                var hexColor = '';
-                var bit2 = true;
-                for(var i = 0; i<6; i++) {
-                    var index = 0;
-                    if(bit2) {
-                        index = Math.floor(Math.random()*5)
-                        bit2 = false;
-                    } else {
-                        index = Math.floor(Math.random()*16)
-                        bit2 = true;
-                    }
-                    hexColor = hexColor + hexes[index];
-                }
-                console.log(hexColor);
-                return hexColor;
+                var hsv = {
+                    hue: Math.floor(Math.random()*360),
+                    sat: (Math.random()),
+                    val: (Math.random()*0.35)
+                };
+                console.log(hsv, hsvToRGB(hsv));
+                return hsvToRGB(hsv);
             },
             rgbToHex: function rgbToHex(r, g, b) {
                 if (r > 255 || g > 255 || b > 255)
