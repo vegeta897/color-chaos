@@ -86,7 +86,6 @@ angular.module('ColorChaos.controllers', [])
             for(var i = 1; i<$scope.lastColors.length; i++) {
                 if($scope.lastColors[i] == c) {
                     grabbing = true;
-                    $scope.lastColors.splice(i,1);
                     colorToPlace = c.substring(1,7);
                     jQuery(myCanvas).mousedown();
                     break;
