@@ -38,7 +38,7 @@ angular.module('ColorChaos.controllers', [])
         // Get the totalDrawn Amount
         var getTotalDrawn = function() {
             fireRef.child('meta').once('value', function(data) {
-                $scope.$apply(function() {
+                $timeout(function() {
                     $scope.allChanges = parseInt(data.val().totalDrawn);
                     var utcSeconds = data.val().lastDrawn;
                     $scope.lastChange = new Date(utcSeconds);
@@ -192,14 +192,14 @@ angular.module('ColorChaos.controllers', [])
                     $scope.lastPixel = [$scope.overPixel[0],$scope.overPixel[1]];
                 }
             }
-            getTotalDrawn(); // Make sure local total is accurate
-            fireRef.child('meta').child('totalDrawn').set($scope.allChanges+1);
-            fireRef.child('meta').child('lastDrawn').set(new Date().getTime());
-            $timeout(function() {
+            if(!erasing) {
                 $scope.yourChanges++; // Update change count
-                getTotalDrawn(); // Refresh total
-                grabbing = false;
-            });
+                fireRef.child('meta').child('totalDrawn').once('value', function(realTotal) {
+                    fireRef.child('meta').child('totalDrawn').set(realTotal.val()+1);
+                });
+            }
+            fireRef.child('meta').child('lastDrawn').set(new Date().getTime());
+            grabbing = false;
         };
         
         // Check for mouse moving to new pixel
@@ -255,7 +255,6 @@ angular.module('ColorChaos.controllers', [])
         // Add callbacks that are fired any time the pixel data changes and adjusts the canvas appropriately
         // Note that child_added events will be fired for initial pixel data as well
         var drawPixel = function(snapshot) {
-            getTotalDrawn();
             var coords = snapshot.name().split(":");
             myContext.fillStyle = "#" + snapshot.val();
             myContext.fillRect(parseInt(coords[0]) * pixSize, parseInt(coords[1]) * pixSize, pixSize, pixSize);
@@ -270,6 +269,7 @@ angular.module('ColorChaos.controllers', [])
         fireRef.child('pixels').on('child_added', drawPixel);
         fireRef.child('pixels').on('child_changed', drawPixel);
         fireRef.child('pixels').on('child_removed', clearPixel);
+        fireRef.child('meta').on('child_changed', getTotalDrawn);
 
         // Save canvas as PNG image
         $scope.saveToImg = function() {
