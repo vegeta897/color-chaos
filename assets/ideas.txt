@@ -6,3 +6,12 @@ right click selects a pixel, left click moves it to that spot?
 finish jukebox
 
 move color weighting into a private function in the utility service
+
+able to click on keptColors individually to delete
+
+highlight keptColor when hovering on canvas, and vice versa
+
+remove color from keptColors when erasing it
+
+implement firebase simple login for security: https://www.firebase.com/docs/security-quickstart.html
+    - then add more canvases and post to public

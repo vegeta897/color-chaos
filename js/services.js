@@ -114,12 +114,12 @@ angular.module('ColorChaos.services', [])
                             }
                         }
                         var satD = (hsv.sat - palette[key].hsv.sat);
-                        if(Math.abs(satD) > 0.09) {
-                            hsv.sat = hsv.sat - satD*0.043;
+                        if(Math.abs(satD) > 0.05) {
+                            hsv.sat = hsv.sat - satD*0.093;
                         }
                         var valD = (hsv.val - palette[key].hsv.val);
-                        if(Math.abs(valD) > 0.09) {
-                            hsv.val = hsv.val - valD*0.043;
+                        if(Math.abs(valD) > 0.05) {
+                            hsv.val = hsv.val - valD*0.093;
                         }
                     }
                 }
