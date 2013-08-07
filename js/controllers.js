@@ -10,7 +10,7 @@ angular.module('ColorChaos.controllers', [])
         $scope.password = '';
         $scope.keptPixels = {}; // Tracking pixels kept
         $scope.keeping = false;
-        var pixSize = 10, mouseDown = 0, grabbing = false, erasing = false, keyPressed = false, colorToPlace = '';
+        var pixSize = 10, mouseDown = 0, grabbing = false, erasing = false, keyPressed = false, keyUpped = true, colorToPlace = '';
         
         // Authentication
         $scope.authenticate = function() {
@@ -280,6 +280,8 @@ angular.module('ColorChaos.controllers', [])
         };
         
         var onKeyDown = function(e) {
+            if(!keyUpped) { return; }
+            keyUpped = false;
             switch (e.which) {
                 case 49: // 49 to 57 and 48 are number keys
                     $scope.grabColor(0);
@@ -331,6 +333,7 @@ angular.module('ColorChaos.controllers', [])
         };
 
         jQuery(window).keydown(onKeyDown);
+        jQuery(window).keyup(function() { keyUpped = true; })
         
     }])
     .controller('Jukebox', ['$scope', '$timeout', 'localStorageService', 'utility', function($scope, $timeout, localStorageService, utility) {
