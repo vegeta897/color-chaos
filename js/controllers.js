@@ -281,7 +281,7 @@ angular.module('ColorChaos.controllers', [])
         
         var onKeyDown = function(e) {
             switch (e.which) {
-                case 49:
+                case 49: // 49 to 57 and 48 are number keys
                     $scope.grabColor(0);
                     break;
                 case 50:
@@ -311,19 +311,19 @@ angular.module('ColorChaos.controllers', [])
                 case 48:
                     $scope.grabColor(9);
                     break;
-                case 81:
+                case 81: // Q
                     keyPressed = 'light';
                     jQuery(myCanvas).mousedown();
                     break;
-                case 87:
+                case 87: // W
                     keyPressed = 'dark';
                     jQuery(myCanvas).mousedown();
                     break;
-                case 67:
+                case 67: // C
                     keyPressed = 'light';
                     jQuery(myCanvas).mousedown();
                     break;
-                case 86:
+                case 86: // V
                     keyPressed = 'dark';
                     jQuery(myCanvas).mousedown();
                     break;
