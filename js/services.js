@@ -40,21 +40,60 @@ angular.module('ColorChaos.services', [])
         };
         
         return {
-            generateLight: function() {
+            generateLight: function(palette) {
+                
                 var hsv = {
                     hue: Math.floor(Math.random()*360),
                     sat: (Math.random()),
                     val: (Math.random()*0.65+0.35)
                 };
-                return hsvToRGB(hsv);
+                for(var key in palette) {
+                    if(palette.hasOwnProperty(key)) {
+                        var hueD = (hsv.hue - palette[key].hsv.hue);
+                        if(Math.abs(hueD) > 10) {
+                            hsv.hue = hsv.hue - hueD/45;
+                        }
+                        var satD = (hsv.sat - palette[key].hsv.sat);
+                        if(Math.abs(satD) > 0.027) {
+                            hsv.sat = hsv.sat - satD*0.063;
+                        }
+                        var valD = (hsv.val - palette[key].hsv.val);
+                        if(Math.abs(valD) > 0.027) {
+                            hsv.val = hsv.val - valD*0.063;
+                        }
+                    }
+                }
+                return {
+                    hex: hsvToRGB(hsv),
+                    hsv: hsv
+                };
             },
-            generateDark: function() {
+            generateDark: function(palette) {
                 var hsv = {
                     hue: Math.floor(Math.random()*360),
                     sat: (Math.random()),
                     val: (Math.random()*0.35)
                 };
-                return hsvToRGB(hsv);
+                for(var key in palette) {
+                    if(palette.hasOwnProperty(key)) {
+                        var hueD = (hsv.hue - palette[key].hsv.hue);
+                        if(Math.abs(hueD) > 10) {
+                            hsv.hue = hsv.hue - hueD/45;
+                        }
+                        var satD = (hsv.sat - palette[key].hsv.sat);
+                        if(Math.abs(satD) > 0.027) {
+                            hsv.sat = hsv.sat - satD*0.063;
+                        }
+                        var valD = (hsv.val - palette[key].hsv.val);
+                        if(Math.abs(valD) > 0.027) {
+                            hsv.val = hsv.val - valD*0.063;
+                        }
+                    }
+                }
+                return {
+                    hex: hsvToRGB(hsv),
+                    hsv: hsv
+                };
             },
             rgbToHex: function rgbToHex(r, g, b) {
                 if (r > 255 || g > 255 || b > 255)

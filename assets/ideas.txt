@@ -3,7 +3,7 @@ use highlighting canvas to highlight certain areas
     
 right click selects a pixel, left click moves it to that spot?
 
-TODO: Move youtube player thing to a new page!!!
+finish jukebox
 
-make number keys select from history
-    - white numbers for right-clicked, black for left-clicked
+the more similar colors you place, the higher the chance you will get that color again
+    - button to "break" that streak

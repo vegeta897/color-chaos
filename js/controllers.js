@@ -8,6 +8,8 @@ angular.module('ColorChaos.controllers', [])
         $scope.overPixel = ['-','-']; // Tracking your coordinates'
         $scope.lastPixel = ['-','-']; // Tracking last pixel placed coordinates
         $scope.password = '';
+        $scope.keptPixels = {}; // Tracking pixels kept
+        $scope.keeping = false;
         var pixSize = 10, mouseDown = 0, grabbing = false, keyPressed = false, colorToPlace = '';
 
         // Authentication
@@ -79,7 +81,7 @@ angular.module('ColorChaos.controllers', [])
                 if($scope.lastColors.length >= 24) { // Don't exceed 24 last colors
                     $scope.lastColors.pop();
                 }
-                $scope.lastColors.unshift('#'+color);
+                $scope.lastColors.unshift(color);
             });
         };
 
@@ -87,19 +89,24 @@ angular.module('ColorChaos.controllers', [])
             if(typeof c == 'number') {
                 if($scope.lastColors[c]) {
                     grabbing = true;
-                    colorToPlace = $scope.lastColors[c].substring(1,7);
+                    colorToPlace = $scope.lastColors[c];
                     jQuery(myCanvas).mousedown();
                 }
             } else {
                 for(var i = 0; i<$scope.lastColors.length; i++) {
                     if($scope.lastColors[i] == c) {
                         grabbing = true;
-                        colorToPlace = c.substring(1,7);
+                        colorToPlace = c;
                         jQuery(myCanvas).mousedown();
                         break;
                     }
                 }
             }
+        };
+        
+        $scope.clearKept = function() {
+            $scope.keptPixels = {};
+            $scope.keeping = false;
         };
         
         var drawOnMouseDown = function() {
@@ -108,13 +115,13 @@ angular.module('ColorChaos.controllers', [])
             dimPixel(); // Dim the pixel being drawn on
             document.getElementById('canvas2').style.cursor = 'none'; // Hide cursor
             // Write the pixel into Firebase
-            var randomColor = '222222';
+            var randomColor = {hex:'222222'};
             if(!grabbing) { // If we don't have a color grabbed
                 switch(event.which) { // Figure out which mouse button we're pressing
                     case 1:
                         // left
                         for(var i=0; i<3; i++) {
-                            randomColor = utility.generateLight();
+                            randomColor = utility.generateLight($scope.keptPixels);
                             addLastColor(randomColor);
                         }
                         break;
@@ -126,7 +133,7 @@ angular.module('ColorChaos.controllers', [])
                         event.preventDefault();
                         // right
                         for(var j=0; j<3; j++) {
-                            randomColor = utility.generateDark();
+                            randomColor = utility.generateDark($scope.keptPixels);
                             addLastColor(randomColor);
                         }
                         break;
@@ -137,13 +144,13 @@ angular.module('ColorChaos.controllers', [])
                     switch(keyPressed) {
                         case 'light':
                             for(var k=0; k<3; k++) {
-                                randomColor = utility.generateLight();
+                                randomColor = utility.generateLight($scope.keptPixels);
                                 addLastColor(randomColor);
                             }
                             break;
                         case 'dark':
                             for(var l=0; l<3; l++) {
-                                randomColor = utility.generateDark();
+                                randomColor = utility.generateDark($scope.keptPixels);
                                 addLastColor(randomColor);
                             }
                             break;
@@ -160,11 +167,18 @@ angular.module('ColorChaos.controllers', [])
             {
                 $scope.lastColors = [];
             }
+            $scope.keeping = true;
             if(grabbing) {
-                fireRef.child('pixels').child($scope.lastPixel[0] + ":" + $scope.lastPixel[1]).set(colorToPlace);
+                fireRef.child('pixels').child($scope.lastPixel[0] + ":" + $scope.lastPixel[1]).set(colorToPlace.hex);
+                if(colorToPlace.hasOwnProperty('hsv')) {
+                    $scope.keptPixels[$scope.lastPixel[0] + ":" + $scope.lastPixel[1]] = colorToPlace;
+                }
             } else {
-                fireRef.child('pixels').child($scope.overPixel[0] + ":" + $scope.overPixel[1]).set(colorToPlace);
-                $scope.lastPixel = [$scope.overPixel[0],$scope.overPixel[1]];
+                fireRef.child('pixels').child($scope.overPixel[0] + ":" + $scope.overPixel[1]).set(colorToPlace.hex);
+                if(colorToPlace.hasOwnProperty('hsv')) {
+                    $scope.keptPixels[$scope.overPixel[0] + ":" + $scope.overPixel[1]] = colorToPlace;
+                    $scope.lastPixel = [$scope.overPixel[0],$scope.overPixel[1]];
+                }
             }
             getTotalDrawn(); // Make sure local total is accurate
             fireRef.child('meta').child('totalDrawn').set($scope.allChanges+1);
