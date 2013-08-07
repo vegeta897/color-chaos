@@ -18,12 +18,12 @@ angular.module('ColorChaos.controllers', [])
             }
         };
         
-        // if password in localstorage exists....
+        // Attempt auth if user has a password in his localstorage
         if(localStorageService.get('password')) {
             $scope.password = localStorageService.get('password');
             $scope.authenticate(); // Check for auth
         }
-        
+        // Clear the localstorage
         $scope.clearCache = function() {
             localStorageService.clearAll();
             $scope.authed = false;
@@ -31,11 +31,11 @@ angular.module('ColorChaos.controllers', [])
         };
 
         // Create a reference to the pixel data for our canvas
-        var pixelDataRef = new Firebase('https://color-chaos.firebaseio.com/canvas1');
+        var fireRef = new Firebase('https://color-chaos.firebaseio.com/canvas1');
         
         // Get the totalDrawn Amount
         var getTotalDrawn = function() {
-            pixelDataRef.child('meta').once('value', function(data) {
+            fireRef.child('meta').once('value', function(data) {
                 $scope.$apply(function() {
                     $scope.allChanges = parseInt(data.val().totalDrawn);
                     var utcSeconds = data.val().lastDrawn;
@@ -96,13 +96,11 @@ angular.module('ColorChaos.controllers', [])
         };
         
         var drawOnMouseDown = function() {
-            console.log('drawing!');
             // If the mouse button is down or the password is incorrect, cancel
             if (jQuery.sha256($scope.password) != '7fff319b30405ee286b1baf1d433ccfd53fecd100f8e46c7b1177da800930e69') return; 
             dimPixel(); // Dim the pixel being drawn on
             document.getElementById('canvas2').style.cursor = 'none'; // Hide cursor
             // Write the pixel into Firebase
-            console.log('drawing2!');
             var randomColor = '222222';
             if(!grabbing) { // If we don't have a color grabbed
                 console.log('not grabbing');
@@ -151,14 +149,14 @@ angular.module('ColorChaos.controllers', [])
                 $scope.lastColors = [];
             }
             if(grabbing) {
-                pixelDataRef.child('pixels').child($scope.lastPixel[0] + ":" + $scope.lastPixel[1]).set(colorToPlace);
+                fireRef.child('pixels').child($scope.lastPixel[0] + ":" + $scope.lastPixel[1]).set(colorToPlace);
             } else {
-                pixelDataRef.child('pixels').child($scope.overPixel[0] + ":" + $scope.overPixel[1]).set(colorToPlace);
+                fireRef.child('pixels').child($scope.overPixel[0] + ":" + $scope.overPixel[1]).set(colorToPlace);
                 $scope.lastPixel = [$scope.overPixel[0],$scope.overPixel[1]];
             }
             getTotalDrawn(); // Make sure local total is accurate
-            pixelDataRef.child('meta').child('totalDrawn').set($scope.allChanges+1);
-            pixelDataRef.child('meta').child('lastDrawn').set(new Date().getTime());
+            fireRef.child('meta').child('totalDrawn').set($scope.allChanges+1);
+            fireRef.child('meta').child('lastDrawn').set(new Date().getTime());
             $timeout(function() {
                 $scope.yourChanges++; // Update change count
                 getTotalDrawn(); // Refresh total
@@ -228,9 +226,9 @@ angular.module('ColorChaos.controllers', [])
             myContext.fillRect(parseInt(coords[0]) * pixSize, parseInt(coords[1]) * pixSize, pixSize, pixSize);
         };
         // Firebase listeners
-        pixelDataRef.child('pixels').on('child_added', drawPixel);
-        pixelDataRef.child('pixels').on('child_changed', drawPixel);
-        pixelDataRef.child('pixels').on('child_removed', clearPixel);
+        fireRef.child('pixels').on('child_added', drawPixel);
+        fireRef.child('pixels').on('child_changed', drawPixel);
+        fireRef.child('pixels').on('child_removed', clearPixel);
 
         // Save canvas as PNG image
         $scope.saveToImg = function() {
@@ -238,7 +236,58 @@ angular.module('ColorChaos.controllers', [])
             myCanvas.toBlob(function(blob) {
                 saveAs(blob, 'canvas-'+timestamp+'.png');
             })
-        }
+        };
         
+    }])
+    .controller('Jukebox', ['$scope', '$timeout', 'localStorageService', 'utility', function($scope, $timeout, localStorageService, utility) {
+
+        // Create a reference to the pixel data for our canvas
+        var fireRef = new Firebase('https://color-chaos.firebaseio.com/canvas1');
         
+        var addToPlaylist = function() {
+            fireRef.child('playlist').once('value', function(data) {
+                if(Object.keys(data.val()).length > 0) {
+                    $scope.playlist = data.val();
+                    var firstVid;
+                    for(var vid in $scope.playlist) {
+                        var utcSeconds = $scope.playlist[vid].addedOn;
+                        $scope.playlist[vid].addedOn = new Date(utcSeconds);
+                        if(!firstVid) { firstVid = $scope.playlist[vid]; }
+                    }
+                    $scope.nowPlaying = firstVid;
+                }
+            });
+        };
+
+        var waitForPlayer = function() {
+            checkPlayerReady();
+        };
+
+        var checkPlayerReady = function() {
+            if(ytplayer) {
+                console.log('player ready');
+                console.log('not playing!');
+                //    ytplayer.playVideo();
+            } else {
+                console.log('waiting more');
+                $timeout(waitForPlayer,200);
+            }
+
+        };
+
+        checkPlayerReady();
+
+        fireRef.child('playlist').on('child_added', addToPlaylist);
+
+        $scope.addVideo = function(url) {
+
+            var re = /^(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
+            if (url.match(re)) {
+                fireRef.child('playlist').push({
+                    url: url,
+                    addedOn: new Date().getTime()
+                });
+            }
+            $scope.videoInputText = ''; // Blank out input
+        };
     }]);

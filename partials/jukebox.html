@@ -1,0 +1,47 @@
+<div class="container">
+    <div class="row">
+        <div class="span4 stats no-indent">
+            
+        </div>
+        <div class="span7">
+            <script src="js/swfobject.js"></script> <!-- For embedding youtube -->
+            <div id="ytapiplayer">
+                You need Flash player 8+ and JavaScript enabled to view this video.
+            </div>
+
+            <script type="text/javascript">
+
+                var params = { allowScriptAccess: "always" };
+                var atts = { id: "myytplayer" };
+                swfobject.embedSWF("http://www.youtube.com/v/xJn3jQ30tEk?enablejsapi=1&playerapiid=ytplayer&version=3",
+                        "ytapiplayer", "540", "200", "8", null, null, params, atts);
+
+                var ytplayer;
+                function onYouTubePlayerReady(playerId) {
+                    ytplayer = document.getElementById("myytplayer");
+                }
+
+            </script>
+
+        </div>
+        <div class="span1 text-right pull-right"></div>
+    </div>
+    <div class="row">
+        <div class="span6 no-indent">
+            <h3>Playlist</h3>
+            <table ng-show="playlist" class="table table-condensed table-hover">
+                <thead><tr><th>Time</th><th>URL</th></tr></thead>
+                <tbody><tr ng-repeat="video in playlist">
+                    <td>{{ video.addedOn | date:'MMM d h:mm:ss a' }}</td><td>{{ video.url }}</td>
+                </tr></tbody>
+            </table>
+            <p ng-hide="playlist">Add a video to the playlist!</p>
+            <form name="playlistForm" class="form-search" ng-submit="addVideo(videoInputText)">
+                <fieldset>
+                    <input type="text" id="video-input" ng-model="videoInputText" class="input input-xlarge" placeholder="Youtube URL">
+                    <button ng-disabled="!videoInputText" class="btn btn-info"><i class="icon-plus icon-white"></i> Add Video</button>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
