@@ -10,7 +10,7 @@ angular.module('ColorChaos.controllers', [])
         $scope.password = '';
         $scope.keptPixels = {}; // Tracking pixels kept
         $scope.keeping = false;
-        var pixSize = 10, mouseDown = 0, grabbing = false, keyPressed = false, colorToPlace = '';
+        var pixSize = 10, mouseDown = 0, grabbing = false, erasing = false, keyPressed = false, colorToPlace = '';
         
         // Authentication
         $scope.authenticate = function() {
@@ -67,8 +67,17 @@ angular.module('ColorChaos.controllers', [])
         $timeout(function(){ alignCanvases(); }, 500); // Set its position to match the real canvas
            
         // Keep track of if the mouse is up or down
-        overCanvas.onmousedown = function() { mouseDown = 1; return false; };
+        overCanvas.onmousedown = function() { 
+            mouseDown = 1; 
+            if(event.which == 2) {
+                erasing = true;
+            }
+            return false; 
+        };
         overCanvas.onmouseout = overCanvas.onmouseup = function() {
+            if(event.which == 2) {
+                erasing = false;
+            }
             mouseDown = 0; 
         };
 
@@ -206,6 +215,9 @@ angular.module('ColorChaos.controllers', [])
                 $scope.$apply(function() {
                     $scope.overPixel = [x,y]; // Update the pixel location we're now over
                 });
+                if(erasing) {
+                    jQuery(myCanvas).mousedown();
+                }
                 highlightPixel(); // Highlight this pixel
             }
         };
