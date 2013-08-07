@@ -63,7 +63,6 @@ angular.module('ColorChaos.controllers', [])
         var overCanvas = document.getElementById('canvas2'); // Define overCanvas for pixel highlighting
         var overContext = overCanvas.getContext ? overCanvas.getContext('2d') : null;
         $timeout(function(){ alignCanvases(); }, 500); // Set its position to match the real canvas
-
            
         // Keep track of if the mouse is up or down
         overCanvas.onmousedown = function() { mouseDown = 1; return false; };
@@ -85,12 +84,23 @@ angular.module('ColorChaos.controllers', [])
         };
 
         $scope.grabColor = function(c) {
-            for(var i = 1; i<$scope.lastColors.length; i++) {
-                if($scope.lastColors[i] == c) {
+            console.log('grabbing color',c);
+            if(typeof c == 'number') {
+                console.log(c,'is a number');
+                if($scope.lastColors[c]) {
+                    console.log(c,'is in lastColors, it\'s',$scope.lastColors[c]);
                     grabbing = true;
-                    colorToPlace = c.substring(1,7);
+                    colorToPlace = $scope.lastColors[c].substring(1,7);
                     jQuery(myCanvas).mousedown();
-                    break;
+                }
+            } else {
+                for(var i = 0; i<$scope.lastColors.length; i++) {
+                    if($scope.lastColors[i] == c) {
+                        grabbing = true;
+                        colorToPlace = c.substring(1,7);
+                        jQuery(myCanvas).mousedown();
+                        break;
+                    }
                 }
             }
         };
@@ -125,24 +135,9 @@ angular.module('ColorChaos.controllers', [])
                         }
                         break;
                     default:
-                        console.log('You have a strange mouse');
-                }
-                colorToPlace = randomColor;
-            } else { // If there is a color being grabbed
-                switch (event.which) { // If we press anything but left mouse, set the color to canvas
-                    case 2:
-                        randomColor = '222222';
-                        event.preventDefault();
-                        // middle
-                        break;
-                    case 3:
-                        randomColor = '222222';
-                        event.preventDefault();
-                        // right
-                        break;
-                    default:
                         // empty
                 }
+                colorToPlace = randomColor;
             }
             if(($scope.lastPixel[0] != $scope.overPixel[0] || $scope.lastPixel[1] != $scope.overPixel[1]) && !grabbing) // If we're on a new pixel
             {
@@ -237,6 +232,43 @@ angular.module('ColorChaos.controllers', [])
                 saveAs(blob, 'canvas-'+timestamp+'.png');
             })
         };
+        
+        var onKeyDown = function(e) {
+            switch (e.which) {
+                case 49:
+                    $scope.grabColor(0);
+                    break;
+                case 50:
+                    $scope.grabColor(1);
+                    break;
+                case 51:
+                    $scope.grabColor(2);
+                    break;
+                case 52:
+                    $scope.grabColor(3);
+                    break;
+                case 53:
+                    $scope.grabColor(4);
+                    break;
+                case 54:
+                    $scope.grabColor(5);
+                    break;
+                case 55:
+                    $scope.grabColor(6);
+                    break;
+                case 56:
+                    $scope.grabColor(7);
+                    break;
+                case 57:
+                    $scope.grabColor(8);
+                    break;
+                case 48:
+                    $scope.grabColor(9);
+                    break;
+            }
+        };
+
+        jQuery(window).keydown(onKeyDown);
         
     }])
     .controller('Jukebox', ['$scope', '$timeout', 'localStorageService', 'utility', function($scope, $timeout, localStorageService, utility) {

@@ -16,6 +16,14 @@
     margin-bottom: 0;
 }
 
+.history-swatch {
+    font-size:11px;
+    line-height: 17px;
+    text-align: center;
+    width:40px;
+    height:16px;
+}
+
 .stats {
     padding-top: 4px;
     font-size: 12px;
