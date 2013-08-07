@@ -5,5 +5,4 @@ right click selects a pixel, left click moves it to that spot?
 
 finish jukebox
 
-the more similar colors you place, the higher the chance you will get that color again
-    - button to "break" that streak
+move color weighting into a private function in the utility service

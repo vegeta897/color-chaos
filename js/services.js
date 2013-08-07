@@ -41,7 +41,6 @@ angular.module('ColorChaos.services', [])
         
         return {
             generateLight: function(palette) {
-                
                 var hsv = {
                     hue: Math.floor(Math.random()*360),
                     sat: (Math.random()),
@@ -50,8 +49,25 @@ angular.module('ColorChaos.services', [])
                 for(var key in palette) {
                     if(palette.hasOwnProperty(key)) {
                         var hueD = (hsv.hue - palette[key].hsv.hue);
-                        if(Math.abs(hueD) > 20) {
-                            hsv.hue = hsv.hue - hueD/45;
+                        if(Math.abs(hueD) > 180) { // We should wrap around
+                            if(hsv.hue > 180) {
+                                hueD = (360-hsv.hue) + palette[key].hsv.hue;
+                            } else {
+                                hueD = ((360-palette[key].hsv.hue) + hsv.hue)*-1;
+                            }
+                            if(Math.abs(hueD) > 20) {
+                                hsv.hue = hsv.hue + hueD/40; // go the opposite way!
+                            }
+                            if(hsv.hue >= 360) { // If we've gone over 360
+                                hsv.hue = hsv.hue - 360; // Wrap it
+                            }
+                            if(hsv.hue < 0) { // If we've gone below 0
+                                hsv.hue = 360 - hsv.hue; // Wrap it
+                            }
+                        } else {
+                            if(Math.abs(hueD) > 20) {
+                                hsv.hue = hsv.hue - hueD/40;
+                            }
                         }
                         var satD = (hsv.sat - palette[key].hsv.sat);
                         if(Math.abs(satD) > 0.09) {
@@ -77,16 +93,33 @@ angular.module('ColorChaos.services', [])
                 for(var key in palette) {
                     if(palette.hasOwnProperty(key)) {
                         var hueD = (hsv.hue - palette[key].hsv.hue);
-                        if(Math.abs(hueD) > 20) {
-                            hsv.hue = hsv.hue - hueD/45;
+                        if(Math.abs(hueD) > 180) { // We should wrap around
+                            if(hsv.hue > 180) {
+                                hueD = (360-hsv.hue) + palette[key].hsv.hue;
+                            } else {
+                                hueD = ((360-palette[key].hsv.hue) + hsv.hue)*-1;
+                            }
+                            if(Math.abs(hueD) > 20) {
+                                hsv.hue = hsv.hue + hueD/40; // go the opposite way!
+                            }
+                            if(hsv.hue >= 360) { // If we've gone over 360
+                                hsv.hue = hsv.hue - 360; // Wrap it
+                            }
+                            if(hsv.hue < 0) { // If we've gone below 0
+                                hsv.hue = 360 - hsv.hue; // Wrap it
+                            }
+                        } else {
+                            if(Math.abs(hueD) > 20) {
+                                hsv.hue = hsv.hue - hueD/40;
+                            }
                         }
                         var satD = (hsv.sat - palette[key].hsv.sat);
                         if(Math.abs(satD) > 0.09) {
-                            hsv.sat = hsv.sat - satD*0.063;
+                            hsv.sat = hsv.sat - satD*0.043;
                         }
                         var valD = (hsv.val - palette[key].hsv.val);
                         if(Math.abs(valD) > 0.09) {
-                            hsv.val = hsv.val - valD*0.063;
+                            hsv.val = hsv.val - valD*0.043;
                         }
                     }
                 }

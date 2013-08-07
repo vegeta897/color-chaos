@@ -11,7 +11,7 @@ angular.module('ColorChaos.controllers', [])
         $scope.keptPixels = {}; // Tracking pixels kept
         $scope.keeping = false;
         var pixSize = 10, mouseDown = 0, grabbing = false, keyPressed = false, colorToPlace = '';
-
+        
         // Authentication
         $scope.authenticate = function() {
             if(jQuery.sha256($scope.password) === '7fff319b30405ee286b1baf1d433ccfd53fecd100f8e46c7b1177da800930e69') {
@@ -107,6 +107,7 @@ angular.module('ColorChaos.controllers', [])
         $scope.clearKept = function() {
             $scope.keptPixels = {};
             $scope.keeping = false;
+            $timeout(function(){ alignCanvases(); }, 200); // Realign canvases
         };
         
         var drawOnMouseDown = function() {
