@@ -14,9 +14,12 @@
         </canvas>
         <canvas id="canvas2" width="960" height="800"></canvas> <!-- Overlay canvas -->
   	</div>
-    <div class="row" style="height:16px;width:960px;">
-        <div class="palette-container" ng-repeat="color in lastColors" style="width:40px;height:16px;float:left;">
+    <div class="row" style="height:32px;width:960px;">
+        <div class="palette-container" ng-repeat="color in lastColors" style="width:40px;height:32px;float:left;">
             <div class="history-swatch" ng-click="grabColor(color)" style="background:{{ color }};"></div>
+            <div ng-show="$index < 10" class="history-number">
+                <span ng-show="$index == 9">0</span><span ng-hide="$index == 9">{{ $index+1 }}</span>
+            </div>
         </div>
     </div>
     <div class="row">

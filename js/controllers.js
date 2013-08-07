@@ -84,11 +84,8 @@ angular.module('ColorChaos.controllers', [])
         };
 
         $scope.grabColor = function(c) {
-            console.log('grabbing color',c);
             if(typeof c == 'number') {
-                console.log(c,'is a number');
                 if($scope.lastColors[c]) {
-                    console.log(c,'is in lastColors, it\'s',$scope.lastColors[c]);
                     grabbing = true;
                     colorToPlace = $scope.lastColors[c].substring(1,7);
                     jQuery(myCanvas).mousedown();
@@ -113,7 +110,6 @@ angular.module('ColorChaos.controllers', [])
             // Write the pixel into Firebase
             var randomColor = '222222';
             if(!grabbing) { // If we don't have a color grabbed
-                console.log('not grabbing');
                 switch (event.which) { // Figure out which mouse button we're pressing
                     case 1:
                         // left

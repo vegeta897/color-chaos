@@ -17,15 +17,18 @@
 }
 
 .history-swatch {
-    font-size:11px;
-    line-height: 17px;
-    text-align: center;
     width:40px;
     height:16px;
 }
 
+.history-number {
+    font-size:14px;
+    line-height: 16px;
+    text-align: center;
+}
+
 .stats {
-    padding-top: 4px;
+    padding-top: 0;
     font-size: 12px;
     line-height: 13px;
 }
