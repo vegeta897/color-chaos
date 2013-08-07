@@ -167,7 +167,9 @@ angular.module('ColorChaos.controllers', [])
             {
                 $scope.lastColors = [];
             }
-            $scope.keeping = true;
+            if(event.which != 2) {
+                $scope.keeping = true;
+            }
             if(grabbing) {
                 fireRef.child('pixels').child($scope.lastPixel[0] + ":" + $scope.lastPixel[1]).set(colorToPlace.hex);
                 if(colorToPlace.hasOwnProperty('hsv')) {

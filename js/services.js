@@ -50,15 +50,15 @@ angular.module('ColorChaos.services', [])
                 for(var key in palette) {
                     if(palette.hasOwnProperty(key)) {
                         var hueD = (hsv.hue - palette[key].hsv.hue);
-                        if(Math.abs(hueD) > 10) {
+                        if(Math.abs(hueD) > 20) {
                             hsv.hue = hsv.hue - hueD/45;
                         }
                         var satD = (hsv.sat - palette[key].hsv.sat);
-                        if(Math.abs(satD) > 0.027) {
+                        if(Math.abs(satD) > 0.09) {
                             hsv.sat = hsv.sat - satD*0.063;
                         }
                         var valD = (hsv.val - palette[key].hsv.val);
-                        if(Math.abs(valD) > 0.027) {
+                        if(Math.abs(valD) > 0.09) {
                             hsv.val = hsv.val - valD*0.063;
                         }
                     }
@@ -77,15 +77,15 @@ angular.module('ColorChaos.services', [])
                 for(var key in palette) {
                     if(palette.hasOwnProperty(key)) {
                         var hueD = (hsv.hue - palette[key].hsv.hue);
-                        if(Math.abs(hueD) > 10) {
+                        if(Math.abs(hueD) > 20) {
                             hsv.hue = hsv.hue - hueD/45;
                         }
                         var satD = (hsv.sat - palette[key].hsv.sat);
-                        if(Math.abs(satD) > 0.027) {
+                        if(Math.abs(satD) > 0.09) {
                             hsv.sat = hsv.sat - satD*0.063;
                         }
                         var valD = (hsv.val - palette[key].hsv.val);
-                        if(Math.abs(valD) > 0.027) {
+                        if(Math.abs(valD) > 0.09) {
                             hsv.val = hsv.val - valD*0.063;
                         }
                     }
