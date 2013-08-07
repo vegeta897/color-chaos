@@ -8,7 +8,7 @@ angular.module('ColorChaos.controllers', [])
         $scope.overPixel = ['-','-']; // Tracking your coordinates'
         $scope.lastPixel = ['-','-']; // Tracking last pixel placed coordinates
         $scope.password = '';
-        var pixSize = 10, mouseDown = 0, grabbing = false, colorToPlace = '';
+        var pixSize = 10, mouseDown = 0, grabbing = false, keyPressed = false, colorToPlace = '';
 
         // Authentication
         $scope.authenticate = function() {
@@ -110,7 +110,7 @@ angular.module('ColorChaos.controllers', [])
             // Write the pixel into Firebase
             var randomColor = '222222';
             if(!grabbing) { // If we don't have a color grabbed
-                switch (event.which) { // Figure out which mouse button we're pressing
+                switch(event.which) { // Figure out which mouse button we're pressing
                     case 1:
                         // left
                         for(var i=0; i<3; i++) {
@@ -125,13 +125,34 @@ angular.module('ColorChaos.controllers', [])
                     case 3:
                         event.preventDefault();
                         // right
-                        for(var i=0; i<3; i++) {
+                        for(var j=0; j<3; j++) {
                             randomColor = utility.generateDark();
                             addLastColor(randomColor);
                         }
                         break;
                     default:
                         // empty
+                }
+                if($scope.overPixel[0] != '-') {
+                    switch(keyPressed) {
+                        case 'light':
+                            for(var k=0; k<3; k++) {
+                                randomColor = utility.generateLight();
+                                addLastColor(randomColor);
+                            }
+                            break;
+                        case 'dark':
+                            for(var l=0; l<3; l++) {
+                                randomColor = utility.generateDark();
+                                addLastColor(randomColor);
+                            }
+                            break;
+                        default:
+                        //empty
+                    }
+                    keyPressed = false;
+                } else {
+                    return;
                 }
                 colorToPlace = randomColor;
             }
@@ -260,6 +281,22 @@ angular.module('ColorChaos.controllers', [])
                     break;
                 case 48:
                     $scope.grabColor(9);
+                    break;
+                case 81:
+                    keyPressed = 'light';
+                    jQuery(myCanvas).mousedown();
+                    break;
+                case 87:
+                    keyPressed = 'dark';
+                    jQuery(myCanvas).mousedown();
+                    break;
+                case 67:
+                    keyPressed = 'light';
+                    jQuery(myCanvas).mousedown();
+                    break;
+                case 86:
+                    keyPressed = 'dark';
+                    jQuery(myCanvas).mousedown();
                     break;
             }
         };
