@@ -55,8 +55,8 @@ angular.module('ColorChaos.services', [])
                             } else {
                                 hueD = ((360-palette[key].hsv.hue) + hsv.hue)*-1;
                             }
-                            if(Math.abs(hueD) > 20) {
-                                hsv.hue = hsv.hue + hueD/40; // go the opposite way!
+                            if(Math.abs(hueD) > 15) {
+                                hsv.hue = hsv.hue + hueD/25; // go the opposite way!
                             }
                             if(hsv.hue >= 360) { // If we've gone over 360
                                 hsv.hue = hsv.hue - 360; // Wrap it
@@ -65,8 +65,8 @@ angular.module('ColorChaos.services', [])
                                 hsv.hue = 360 - hsv.hue; // Wrap it
                             }
                         } else {
-                            if(Math.abs(hueD) > 20) {
-                                hsv.hue = hsv.hue - hueD/40;
+                            if(Math.abs(hueD) > 15) {
+                                hsv.hue = hsv.hue - hueD/25;
                             }
                         }
                         var satD = (hsv.sat - palette[key].hsv.sat);
@@ -99,8 +99,8 @@ angular.module('ColorChaos.services', [])
                             } else {
                                 hueD = ((360-palette[key].hsv.hue) + hsv.hue)*-1;
                             }
-                            if(Math.abs(hueD) > 20) {
-                                hsv.hue = hsv.hue + hueD/40; // go the opposite way!
+                            if(Math.abs(hueD) > 15) {
+                                hsv.hue = hsv.hue + hueD/30; // go the opposite way!
                             }
                             if(hsv.hue >= 360) { // If we've gone over 360
                                 hsv.hue = hsv.hue - 360; // Wrap it
@@ -109,8 +109,8 @@ angular.module('ColorChaos.services', [])
                                 hsv.hue = 360 - hsv.hue; // Wrap it
                             }
                         } else {
-                            if(Math.abs(hueD) > 20) {
-                                hsv.hue = hsv.hue - hueD/40;
+                            if(Math.abs(hueD) > 15) {
+                                hsv.hue = hsv.hue - hueD/30;
                             }
                         }
                         var satD = (hsv.sat - palette[key].hsv.sat);
