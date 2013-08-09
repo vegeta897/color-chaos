@@ -1,4 +1,8 @@
-#canvas2 {
+#highlightCanvas {
+    position: absolute;
+    top: -800px;
+}
+#pingCanvas {
     position: absolute;
     top: -800px;
 }

@@ -10,7 +10,7 @@ angular.module('ColorChaos.controllers', [])
         $scope.password = '';
         $scope.keptPixels = {}; // Tracking pixels kept
         $scope.keeping = false;
-        var pixSize = 10, mouseDown = 0, grabbing = false, erasing = false, keyPressed = false, keyUpped = true, colorToPlace = '';
+        var pixSize = 10, mouseDown = 0, grabbing = false, erasing = false, keyPressed = false, keyUpped = true, colorToPlace = '', pinging = false;
         
         // Authentication
         $scope.authenticate = function() {
@@ -40,10 +40,32 @@ angular.module('ColorChaos.controllers', [])
             $scope.authed = false;
             $scope.password = '';
         };
+        
+        // Set up our canvas
+        var myCanvas = document.getElementById('canvas1');
+        var myContext = myCanvas.getContext ? myCanvas.getContext('2d') : null;
+        myContext.fillStyle = '#222222'; // Fill the canvas with gray
+        myContext.fillRect(0,0,960,800);
+        
+        jQuery('body').on('contextmenu', '#highlightCanvas', function(e){ // Prevent right-click on canvas
+            return false; 
+        });
+        
+        // Align canvas positions
+        var alignCanvases = function() {
+            jQuery(highCanvas).offset(jQuery(myCanvas).offset()); // Set highCanvas offset to main canvas offset
+            jQuery(pingCanvas).offset(jQuery(myCanvas).offset()); // Set pingCanvas offset to main canvas offset
+        };
 
+        var highCanvas = document.getElementById('highlightCanvas'); // Define highCanvas for pixel highlighting
+        var pingCanvas = document.getElementById('pingCanvas'); // Define pingCanvas for pinging
+        var highContext = highCanvas.getContext ? highCanvas.getContext('2d') : null;
+        var pingContext = pingCanvas.getContext ? pingCanvas.getContext('2d') : null;
+        $timeout(function(){ alignCanvases(); }, 500); // Set its position to match the real canvas
+        
         // Create a reference to the pixel data for our canvas
         var fireRef = new Firebase('https://color-chaos.firebaseio.com/canvas1');
-        
+
         // Get the totalDrawn Amount
         var getTotalDrawn = function() {
             fireRef.child('meta').once('value', function(data) {
@@ -56,34 +78,15 @@ angular.module('ColorChaos.controllers', [])
         };
         getTotalDrawn();
         
-        // Set up our canvas
-        var myCanvas = document.getElementById('canvas1');
-        var myContext = myCanvas.getContext ? myCanvas.getContext('2d') : null;
-        myContext.fillStyle = '#222222'; // Fill the canvas with gray
-        myContext.fillRect(0,0,960,800);
-        
-        jQuery('body').on('contextmenu', '#canvas2', function(e){ // Prevent right-click on canvas
-            return false; 
-        });
-        
-        // Align canvas positions
-        var alignCanvases = function() {
-            jQuery(overCanvas).offset(jQuery(myCanvas).offset()); // Set overCanvas offset to main canvas offset
-        };
-
-        var overCanvas = document.getElementById('canvas2'); // Define overCanvas for pixel highlighting
-        var overContext = overCanvas.getContext ? overCanvas.getContext('2d') : null;
-        $timeout(function(){ alignCanvases(); }, 500); // Set its position to match the real canvas
-           
         // Keep track of if the mouse is up or down
-        overCanvas.onmousedown = function() { 
+        highCanvas.onmousedown = function() { 
             mouseDown = 1; 
             if(event.which == 2) {
                 erasing = true;
             }
             return false; 
         };
-        overCanvas.onmouseout = overCanvas.onmouseup = function() {
+        highCanvas.onmouseout = highCanvas.onmouseup = function() {
             if(event.which == 2) {
                 erasing = false;
             }
@@ -124,8 +127,10 @@ angular.module('ColorChaos.controllers', [])
         var checkEmptyKept = function() {
             var count = 0;
             for(var key in $scope.keptPixels) {
-                count++;
-                break;
+                if($scope.keptPixels.hasOwnProperty(key)) {
+                    count++;
+                    break;
+                }
             }
             if(count == 0) {
                 $scope.keeping = false;
@@ -149,22 +154,22 @@ angular.module('ColorChaos.controllers', [])
         // Highlight pixel on canvas when hovering over pool
         $scope.hoverKept = function(colorId) {
             var coords = colorId.split(":");
-            overContext.strokeStyle = '#FFFFFF';
-            overContext.strokeRect(coords[0]*pixSize-0.5,coords[1]*pixSize-0.5,pixSize+1,pixSize+1);
-            overContext.strokeStyle = '#000000';
-            overContext.strokeRect(coords[0]*pixSize+0.5,coords[1]*pixSize+0.5,pixSize-1,pixSize-1);
+            highContext.strokeStyle = '#FFFFFF';
+            highContext.strokeRect(coords[0]*pixSize-0.5,coords[1]*pixSize-0.5,pixSize+1,pixSize+1);
+            highContext.strokeStyle = '#000000';
+            highContext.strokeRect(coords[0]*pixSize+0.5,coords[1]*pixSize+0.5,pixSize-1,pixSize-1);
         };
         // Dim pixel on canvas when hovering off pool
         $scope.unhoverKept = function(colorId) {
             var coords = colorId.split(":");
-            overContext.clearRect(coords[0]*pixSize-1,coords[1]*pixSize-1,pixSize+2,pixSize+2);
+            highContext.clearRect(coords[0]*pixSize-1,coords[1]*pixSize-1,pixSize+2,pixSize+2);
         };
         
         var drawOnMouseDown = function() {
             // If the mouse button is down or the password is incorrect, cancel
             if (jQuery.sha256($scope.password) != '7fff319b30405ee286b1baf1d433ccfd53fecd100f8e46c7b1177da800930e69') return; 
             dimPixel(); // Dim the pixel being drawn on
-            document.getElementById('canvas2').style.cursor = 'none'; // Hide cursor
+            document.getElementById('highlightCanvas').style.cursor = 'none'; // Hide cursor
             if(erasing) {
                 fireRef.child('pixels').child($scope.overPixel[0] + ":" + $scope.overPixel[1]).set(null);
                 return;
@@ -249,13 +254,13 @@ angular.module('ColorChaos.controllers', [])
         // Check for mouse moving to new pixel
         var onMouseMove = function(e) {
             // Get pixel location
-            var offset = jQuery(overCanvas).offset();
+            var offset = jQuery(highCanvas).offset();
             var x = Math.floor((e.pageX - offset.left) / pixSize),
                 y = Math.floor((e.pageY - offset.top) / pixSize);
             // If the pixel location has changed
             if($scope.overPixel[0] != x || $scope.overPixel[1] != y) {
-                document.getElementById('canvas2').style.cursor = 'default'; // Show cursor
-                dimPixel(); // Dim the last pixel
+                document.getElementById('highlightCanvas').style.cursor = 'default'; // Show cursor
+                dimPixel(); // Dim the previous pixel
                 $scope.$apply(function() {
                     if($scope.keptPixels.hasOwnProperty($scope.overPixel[0] + ":" + $scope.overPixel[1])) {
                         $scope.keptPixels[$scope.overPixel[0] + ":" + $scope.overPixel[1]].hover = false;
@@ -275,7 +280,7 @@ angular.module('ColorChaos.controllers', [])
         // Dim the pixel after leaving it
         var dimPixel = function() {
             if($scope.overPixel[0] != '-') {
-                overContext.clearRect($scope.overPixel[0] * pixSize, $scope.overPixel[1] * pixSize, pixSize, pixSize);
+                highContext.clearRect($scope.overPixel[0] * pixSize, $scope.overPixel[1] * pixSize, pixSize, pixSize);
             }
         };
         // When the mouse leaves the canvas
@@ -289,17 +294,63 @@ angular.module('ColorChaos.controllers', [])
         // Highlight the pixel underneath the mouse
         var highlightPixel = function() {
             // Draw the highlighted color pixel
-            overContext.fillStyle = 'rgba(255, 255, 255, 0.15)';
-            overContext.fillRect($scope.overPixel[0] * pixSize, $scope.overPixel[1] * pixSize, pixSize, pixSize);
+            highContext.fillStyle = 'rgba(255, 255, 255, 0.15)';
+            highContext.fillRect($scope.overPixel[0] * pixSize, $scope.overPixel[1] * pixSize, pixSize, pixSize);
         };
-        // When the mouse button is pressed (on the overCanvas)
+
+        // Ping a pixel
+        var ping = function() {
+            if(pinging || $scope.overPixel[0] == '-') { return; }
+            pinging = $scope.overPixel;
+            fireRef.child('meta').child('pings').child(pinging[0] + ":" + pinging[1]).set(true);
+            $timeout(function(){unPing()},1600); // Keep ping for 5 seconds
+        };
+        // Un-ping a pixel
+        var unPing = function() {
+            fireRef.child('meta').child('pings').child(pinging[0] + ":" + pinging[1]).set(null);
+            pinging = false;
+        };
+        var drawPing = function(snapshot) {
+            var coords = snapshot.name().split(":");
+            var my_gradient = pingContext.createRadialGradient(
+                coords[0]*pixSize + pixSize/2, coords[1]*pixSize + pixSize/2, 15,
+                coords[0]*pixSize + pixSize/2, coords[1]*pixSize + pixSize/2, 0
+            );
+            my_gradient.addColorStop(0, "rgba(255, 255, 255, 0)");
+            my_gradient.addColorStop(0.2, "rgba(255, 255, 255, 1)");
+            my_gradient.addColorStop(0.4, "rgba(255, 255, 255, 0)");
+            my_gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+            pingContext.fillStyle = my_gradient;
+            pingContext.beginPath();
+            pingContext.arc(coords[0]*pixSize + pixSize/2, coords[1]*pixSize + pixSize/2, 15, 0, 2 * Math.PI, false);
+            var cycle = 0;
+            function fadePing() {
+                if(Math.round(cycle/2) == cycle/2) {
+                    pingContext.fill();
+                } else {
+                    pingContext.clearRect(coords[0] * pixSize - 15 + pixSize/2, coords[1] * pixSize - 15 + pixSize/2, 30, 30);
+                }
+                cycle++;
+                if(cycle >= 8) {
+                    clearInterval(pingInt);
+                }
+            }
+            var pingInt = setInterval(function(){fadePing()},200);
+            dimPixel();
+        };
+        var hidePing = function(snapshot) {
+            var coords = snapshot.name().split(":");
+            pingContext.clearRect(coords[0] * pixSize - 15 + pixSize/2, coords[1] * pixSize - 15 + pixSize/2, 30, 30);
+        };
+        
+        // When the mouse button is pressed (on the highCanvas)
         var overMouseDown = function() {
             jQuery(myCanvas).mousedown(); // Echo the event to the real canvas
         };
         
-        jQuery(overCanvas).mousemove(onMouseMove);
-        jQuery(overCanvas).mouseout(onMouseOut);
-        jQuery(overCanvas).mousedown(overMouseDown); // Will send to real canvas
+        jQuery(highCanvas).mousemove(onMouseMove);
+        jQuery(highCanvas).mouseout(onMouseOut);
+        jQuery(highCanvas).mousedown(overMouseDown); // Will send to real canvas
         jQuery(myCanvas).mousedown(drawOnMouseDown);
         jQuery(window).resize(alignCanvases); // Re-align canvases on window resize
 
@@ -324,7 +375,10 @@ angular.module('ColorChaos.controllers', [])
         fireRef.child('pixels').on('child_added', drawPixel);
         fireRef.child('pixels').on('child_changed', drawPixel);
         fireRef.child('pixels').on('child_removed', clearPixel);
-        fireRef.child('meta').on('child_changed', getTotalDrawn);
+        fireRef.child('meta').child('lastDrawn').on('value', getTotalDrawn);
+        fireRef.child('meta').child('totalDrawn').on('value', getTotalDrawn);
+        fireRef.child('meta').child('pings').on('child_added', drawPing);
+        fireRef.child('meta').child('pings').on('child_removed', hidePing);
 
         // Save canvas as PNG image
         $scope.saveToImg = function() {
@@ -367,6 +421,9 @@ angular.module('ColorChaos.controllers', [])
                     break;
                 case 48:
                     $scope.grabColor(9);
+                    break;
+                case 65:
+                    ping();
                     break;
                 case 81: // Q
                     keyPressed = 'light';
