@@ -121,6 +121,16 @@ angular.module('ColorChaos.controllers', [])
                 }
             }
         };
+        var checkEmptyKept = function() {
+            var count = 0;
+            for(var key in $scope.keptPixels) {
+                count++;
+                break;
+            }
+            if(count == 0) {
+                $scope.keeping = false;
+            }
+        };
         // Clear out kept pixels pool
         $scope.clearKept = function() {
             $scope.keptPixels = {};
@@ -132,6 +142,7 @@ angular.module('ColorChaos.controllers', [])
         $scope.removeKept = function(colorId) {
             $scope.unhoverKept(colorId); // Dim the pixel
             delete $scope.keptPixels[colorId];
+            checkEmptyKept();
             localStorageService.set('keptPixels', JSON.stringify($scope.keptPixels));
             $timeout(function(){ alignCanvases(); }, 200); // Realign canvases
         };
@@ -154,6 +165,10 @@ angular.module('ColorChaos.controllers', [])
             if (jQuery.sha256($scope.password) != '7fff319b30405ee286b1baf1d433ccfd53fecd100f8e46c7b1177da800930e69') return; 
             dimPixel(); // Dim the pixel being drawn on
             document.getElementById('canvas2').style.cursor = 'none'; // Hide cursor
+            if(erasing) {
+                fireRef.child('pixels').child($scope.overPixel[0] + ":" + $scope.overPixel[1]).set(null);
+                return;
+            }
             // Write the pixel into Firebase
             var randomColor = {hex:'222222'};
             if(!grabbing) { // If we don't have a color grabbed
@@ -164,10 +179,6 @@ angular.module('ColorChaos.controllers', [])
                             randomColor = utility.generateLight($scope.keptPixels);
                             addLastColor(randomColor);
                         }
-                        break;
-                    case 2:
-                        event.preventDefault();
-                        // middle
                         break;
                     case 3:
                         event.preventDefault();
@@ -225,17 +236,12 @@ angular.module('ColorChaos.controllers', [])
                 }
             }
             localStorageService.set('keptPixels', JSON.stringify($scope.keptPixels));
-            if(!erasing) {
-                $scope.yourChanges++; // Update change count
-                localStorageService.set('yourChanges', $scope.yourChanges);
-                fireRef.child('meta').child('totalDrawn').once('value', function(realTotal) {
-                    fireRef.child('meta').child('totalDrawn').set(realTotal.val()+1);
-                });
-            } else {
-                delete $scope.keptPixels[$scope.overPixel[0] + ":" + $scope.overPixel[1]];
-                localStorageService.set('keptPixels', JSON.stringify($scope.keptPixels));
-                $timeout(function(){ alignCanvases(); }, 200); // Realign canvases
-            }
+            
+            $scope.yourChanges++; // Update change count
+            localStorageService.set('yourChanges', $scope.yourChanges);
+            fireRef.child('meta').child('totalDrawn').once('value', function(realTotal) {
+                fireRef.child('meta').child('totalDrawn').set(realTotal.val()+1);
+            });
             fireRef.child('meta').child('lastDrawn').set(new Date().getTime());
             grabbing = false;
         };
@@ -307,6 +313,10 @@ angular.module('ColorChaos.controllers', [])
         // Erase a pixel
         var clearPixel = function(snapshot) {
             var coords = snapshot.name().split(":");
+            delete $scope.keptPixels[coords[0] + ":" + coords[1]];
+            checkEmptyKept();
+            localStorageService.set('keptPixels', JSON.stringify($scope.keptPixels));
+            $timeout(function(){ alignCanvases(); }, 200); // Realign canvases
             myContext.fillStyle = '#222222'; // Canvas bg color
             myContext.fillRect(parseInt(coords[0]) * pixSize, parseInt(coords[1]) * pixSize, pixSize, pixSize);
         };
