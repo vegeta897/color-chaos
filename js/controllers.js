@@ -121,12 +121,32 @@ angular.module('ColorChaos.controllers', [])
                 }
             }
         };
-        
+        // Clear out kept pixels pool
         $scope.clearKept = function() {
             $scope.keptPixels = {};
             localStorageService.set('keptPixels', JSON.stringify($scope.keptPixels));
             $scope.keeping = false;
             $timeout(function(){ alignCanvases(); }, 200); // Realign canvases
+        };
+        // Remove the clicked color from the pool
+        $scope.removeKept = function(colorId) {
+            $scope.unhoverKept(colorId); // Dim the pixel
+            delete $scope.keptPixels[colorId];
+            localStorageService.set('keptPixels', JSON.stringify($scope.keptPixels));
+            $timeout(function(){ alignCanvases(); }, 200); // Realign canvases
+        };
+        // Highlight pixel on canvas when hovering over pool
+        $scope.hoverKept = function(colorId) {
+            var coords = colorId.split(":");
+            overContext.strokeStyle = '#FFFFFF';
+            overContext.strokeRect(coords[0]*pixSize-0.5,coords[1]*pixSize-0.5,pixSize+1,pixSize+1);
+            overContext.strokeStyle = '#000000';
+            overContext.strokeRect(coords[0]*pixSize+0.5,coords[1]*pixSize+0.5,pixSize-1,pixSize-1);
+        };
+        // Dim pixel on canvas when hovering off pool
+        $scope.unhoverKept = function(colorId) {
+            var coords = colorId.split(":");
+            overContext.clearRect(coords[0]*pixSize-1,coords[1]*pixSize-1,pixSize+2,pixSize+2);
         };
         
         var drawOnMouseDown = function() {
@@ -194,11 +214,13 @@ angular.module('ColorChaos.controllers', [])
                 fireRef.child('pixels').child($scope.lastPixel[0] + ":" + $scope.lastPixel[1]).set(colorToPlace.hex);
                 if(colorToPlace.hasOwnProperty('hsv')) {
                     $scope.keptPixels[$scope.lastPixel[0] + ":" + $scope.lastPixel[1]] = colorToPlace;
+                    $scope.keptPixels[$scope.lastPixel[0] + ":" + $scope.lastPixel[1]].id = $scope.lastPixel[0] + ":" + $scope.lastPixel[1];
                 }
             } else {
                 fireRef.child('pixels').child($scope.overPixel[0] + ":" + $scope.overPixel[1]).set(colorToPlace.hex);
                 if(colorToPlace.hasOwnProperty('hsv')) {
                     $scope.keptPixels[$scope.overPixel[0] + ":" + $scope.overPixel[1]] = colorToPlace;
+                    $scope.keptPixels[$scope.overPixel[0] + ":" + $scope.overPixel[1]].id = $scope.overPixel[0] + ":" + $scope.overPixel[1];
                     $scope.lastPixel = [$scope.overPixel[0],$scope.overPixel[1]];
                 }
             }
@@ -209,6 +231,10 @@ angular.module('ColorChaos.controllers', [])
                 fireRef.child('meta').child('totalDrawn').once('value', function(realTotal) {
                     fireRef.child('meta').child('totalDrawn').set(realTotal.val()+1);
                 });
+            } else {
+                delete $scope.keptPixels[$scope.overPixel[0] + ":" + $scope.overPixel[1]];
+                localStorageService.set('keptPixels', JSON.stringify($scope.keptPixels));
+                $timeout(function(){ alignCanvases(); }, 200); // Realign canvases
             }
             fireRef.child('meta').child('lastDrawn').set(new Date().getTime());
             grabbing = false;
@@ -225,6 +251,13 @@ angular.module('ColorChaos.controllers', [])
                 document.getElementById('canvas2').style.cursor = 'default'; // Show cursor
                 dimPixel(); // Dim the last pixel
                 $scope.$apply(function() {
+                    if($scope.keptPixels.hasOwnProperty($scope.overPixel[0] + ":" + $scope.overPixel[1])) {
+                        $scope.keptPixels[$scope.overPixel[0] + ":" + $scope.overPixel[1]].hover = false;
+                    }
+                    if($scope.keptPixels.hasOwnProperty(x + ":" + y)) {
+                        $scope.keptPixels[x + ":" + y].hover = true;
+                    }
+                    
                     $scope.overPixel = [x,y]; // Update the pixel location we're now over
                 });
                 if(erasing) {

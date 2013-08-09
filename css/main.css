@@ -26,6 +26,14 @@
     height:16px;
 }
 
+.kept-hover {
+    position: relative;
+    top: -2px;
+    left: -2px;
+    border: 2px solid white;
+    z-index: 100;
+}
+
 .history-number {
     font-size:14px;
     line-height: 16px;

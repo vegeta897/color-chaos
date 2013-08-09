@@ -32,8 +32,8 @@
             <button ng-show="keeping" class="btn btn-mini btn-warning" ng-click="clearKept()">Clear</button>
         </div>
         <div class="span6">
-            <div class="palette-container" ng-repeat="color in keptPixels" style="width:16px;height:16px;float:left;">
-                <div class="kept-swatch" style="background:{{ '#'+color.hex }};"></div>
+            <div class="palette-container" ng-repeat="color in keptPixels" ng-click="removeKept(color.id)" ng-mouseenter="hoverKept(color.id)" ng-mouseleave="unhoverKept(color.id)" style="width:16px;height:16px;float:left;">
+                <div ng-class="{'kept-hover': color.hover}" class="kept-swatch" style="background:{{ '#'+color.hex }};"></div>
             </div>
         </div>
         <div class="span1 text-right pull-right">{{ overPixel[0] }} , {{ overPixel[1] }}</div>
