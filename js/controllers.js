@@ -16,14 +16,23 @@ angular.module('ColorChaos.controllers', [])
         $scope.authenticate = function() {
             if(jQuery.sha256($scope.password) === '7fff319b30405ee286b1baf1d433ccfd53fecd100f8e46c7b1177da800930e69') {
                 localStorageService.set('password', $scope.password);
+                localStorageService.set()
                 $scope.authed = true;
             }
         };
-        
+     //   localStorageService.remove('keptPixels');
         // Attempt auth if user has a password in his localstorage
         if(localStorageService.get('password')) {
             $scope.password = localStorageService.get('password');
             $scope.authenticate(); // Check for auth
+        }
+        // Attempt to get yourChanges count from localstorage
+        if(localStorageService.get('yourChanges')) {
+            $scope.yourChanges = localStorageService.get('yourChanges');
+        }
+        // Attempt to get keptPixels from localstorage
+        if(localStorageService.get('keptPixels')) {
+            $scope.keptPixels = localStorageService.get('keptPixels');
         }
         // Clear the localstorage
         $scope.clearCache = function() {
@@ -115,6 +124,7 @@ angular.module('ColorChaos.controllers', [])
         
         $scope.clearKept = function() {
             $scope.keptPixels = {};
+            localStorageService.set('keptPixels', JSON.stringify($scope.keptPixels));
             $scope.keeping = false;
             $timeout(function(){ alignCanvases(); }, 200); // Realign canvases
         };
@@ -192,8 +202,10 @@ angular.module('ColorChaos.controllers', [])
                     $scope.lastPixel = [$scope.overPixel[0],$scope.overPixel[1]];
                 }
             }
+            localStorageService.set('keptPixels', JSON.stringify($scope.keptPixels));
             if(!erasing) {
                 $scope.yourChanges++; // Update change count
+                localStorageService.set('yourChanges', $scope.yourChanges);
                 fireRef.child('meta').child('totalDrawn').once('value', function(realTotal) {
                     fireRef.child('meta').child('totalDrawn').set(realTotal.val()+1);
                 });

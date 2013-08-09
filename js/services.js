@@ -43,8 +43,8 @@ angular.module('ColorChaos.services', [])
             generateLight: function(palette) {
                 var hsv = {
                     hue: Math.floor(Math.random()*360),
-                    sat: (Math.random()),
-                    val: (Math.random()*0.65+0.35)
+                    sat: Math.round(Math.random()*100)/100,
+                    val: Math.round((Math.random()*0.65+0.35)*100)/100
                 };
                 for(var key in palette) {
                     if(palette.hasOwnProperty(key)) {
@@ -87,8 +87,8 @@ angular.module('ColorChaos.services', [])
             generateDark: function(palette) {
                 var hsv = {
                     hue: Math.floor(Math.random()*360),
-                    sat: (Math.random()),
-                    val: (Math.random()*0.35)
+                    sat: Math.round(Math.random()*100)/100,
+                    val: Math.round(Math.random()*35)/100
                 };
                 for(var key in palette) {
                     if(palette.hasOwnProperty(key)) {
