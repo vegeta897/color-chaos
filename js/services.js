@@ -55,7 +55,7 @@ angular.module('ColorChaos.services', [])
                             } else {
                                 hueD = ((360-palette[key].hsv.hue) + hsv.hue)*-1;
                             }
-                            if(Math.abs(hueD) > 15) {
+                            if(Math.abs(hueD) > 10) {
                                 hsv.hue = hsv.hue + hueD/25; // go the opposite way!
                             }
                             if(hsv.hue >= 360) { // If we've gone over 360
@@ -65,16 +65,16 @@ angular.module('ColorChaos.services', [])
                                 hsv.hue = 360 - hsv.hue; // Wrap it
                             }
                         } else {
-                            if(Math.abs(hueD) > 15) {
+                            if(Math.abs(hueD) > 10) {
                                 hsv.hue = hsv.hue - hueD/25;
                             }
                         }
                         var satD = (hsv.sat - palette[key].hsv.sat);
-                        if(Math.abs(satD) > 0.09) {
+                        if(Math.abs(satD) > 0.05) {
                             hsv.sat = hsv.sat - satD*0.063;
                         }
                         var valD = (hsv.val - palette[key].hsv.val);
-                        if(Math.abs(valD) > 0.09) {
+                        if(Math.abs(valD) > 0.05) {
                             hsv.val = hsv.val - valD*0.063;
                         }
                     }
@@ -99,7 +99,7 @@ angular.module('ColorChaos.services', [])
                             } else {
                                 hueD = ((360-palette[key].hsv.hue) + hsv.hue)*-1;
                             }
-                            if(Math.abs(hueD) > 15) {
+                            if(Math.abs(hueD) > 10) {
                                 hsv.hue = hsv.hue + hueD/30; // go the opposite way!
                             }
                             if(hsv.hue >= 360) { // If we've gone over 360
@@ -109,7 +109,7 @@ angular.module('ColorChaos.services', [])
                                 hsv.hue = 360 - hsv.hue; // Wrap it
                             }
                         } else {
-                            if(Math.abs(hueD) > 15) {
+                            if(Math.abs(hueD) > 10) {
                                 hsv.hue = hsv.hue - hueD/30;
                             }
                         }
