@@ -364,9 +364,6 @@ angular.module('ColorChaos.controllers', [])
         // Erase a pixel
         var clearPixel = function(snapshot) {
             var coords = snapshot.name().split(":");
-            delete $scope.keptPixels[coords[0] + ":" + coords[1]];
-            checkEmptyKept();
-            localStorageService.set('keptPixels', JSON.stringify($scope.keptPixels));
             $timeout(function(){ alignCanvases(); }, 200); // Realign canvases
             myContext.fillStyle = '#222222'; // Canvas bg color
             myContext.fillRect(parseInt(coords[0]) * pixSize, parseInt(coords[1]) * pixSize, pixSize, pixSize);
