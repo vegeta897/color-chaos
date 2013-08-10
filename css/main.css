@@ -70,3 +70,8 @@
     font-size: 12px;
     line-height: 13px;
 }
+
+div.coords {
+    width: 75px;
+    margin-left: 5px;
+}

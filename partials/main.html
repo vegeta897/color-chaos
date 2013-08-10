@@ -53,6 +53,7 @@
                 <div ng-class="{'kept-hover': color.hover}" class="kept-swatch" style="background:{{ '#'+color.hex }};"></div>
             </div>
         </div>
-        <div class="span1 text-right pull-right">{{ overPixel[0] }} , {{ overPixel[1] }}</div>
+        <div class="span1 text-right pull-right coords">{{ overPixel[0] }} , {{ overPixel[1] }}<br>
+        <small class="muted">Last: {{ lastPixel[0] }} , {{ lastPixel[1] }}</small></div>
     </div>
 </div>

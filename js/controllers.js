@@ -34,6 +34,10 @@ angular.module('ColorChaos.controllers', [])
         if(localStorageService.get('keptPixels')) {
             $scope.keptPixels = localStorageService.get('keptPixels');
         }
+        // Attempt to get lastPixel from localstorage
+        if(localStorageService.get('lastPixel')) {
+            $scope.lastPixel = localStorageService.get('lastPixel');
+        }
         // Clear the localstorage
         $scope.clearCache = function() {
             localStorageService.clearAll();
@@ -124,6 +128,7 @@ angular.module('ColorChaos.controllers', [])
                 }
             }
         };
+        // Checks if there are kept pixels, hides clear button if there are none
         var checkEmptyKept = function() {
             var count = 0;
             for(var key in $scope.keptPixels) {
@@ -132,10 +137,10 @@ angular.module('ColorChaos.controllers', [])
                     break;
                 }
             }
-            if(count == 0) {
-                $scope.keeping = false;
-            }
+            $scope.keeping = (count > 0); // Keeping is true if the count is greater than 0
         };
+        checkEmptyKept();
+        
         // Clear out kept pixels pool
         $scope.clearKept = function() {
             $scope.keptPixels = {};
@@ -238,6 +243,7 @@ angular.module('ColorChaos.controllers', [])
                     $scope.keptPixels[$scope.overPixel[0] + ":" + $scope.overPixel[1]] = colorToPlace;
                     $scope.keptPixels[$scope.overPixel[0] + ":" + $scope.overPixel[1]].id = $scope.overPixel[0] + ":" + $scope.overPixel[1];
                     $scope.lastPixel = [$scope.overPixel[0],$scope.overPixel[1]];
+                    localStorageService.set('lastPixel', JSON.stringify($scope.lastPixel));
                 }
             }
             localStorageService.set('keptPixels', JSON.stringify($scope.keptPixels));
