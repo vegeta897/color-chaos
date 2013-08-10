@@ -11,3 +11,11 @@ implement firebase simple login for security: https://www.firebase.com/docs/secu
     - then add more canvases and post to public
 
 add instructions
+
+
+========== NEW COLOR WEIGHTING ALGORITHM ==========
+
+add RPG type effects popping up based on how the color algo went. Like if the offset is really low, show 'critical hit!' etc.
+    hue critical hit, saturation critical hit, value critical hit, combos, all 3, etc
+
+add chance for "super white" or "super black" special pixels to appear. special hex code, drawn as gradients on the canvas and in history. have a high/low value with low saturation to greatly weigh the average

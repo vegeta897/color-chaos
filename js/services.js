@@ -2,8 +2,6 @@
 
 angular.module('ColorChaos.services', [])
     .factory('utility', function() {
-        var hexes = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
-
         var hsvToRGB = function(hsv) {
             var h = hsv.hue, s = hsv.sat, v = hsv.val;
             var rgb, i, data = [];
@@ -38,90 +36,76 @@ angular.module('ColorChaos.services', [])
                 return ("0" + Math.round(x*255).toString(16)).slice(-2);
             }).join('');
         };
-        
-        return {
-            generateLight: function(palette) {
-                var hsv = {
-                    hue: Math.floor(Math.random()*360),
-                    sat: Math.round(Math.random()*100)/100,
-                    val: Math.round((Math.random()*0.65+0.35)*100)/100
-                };
-                for(var key in palette) {
-                    if(palette.hasOwnProperty(key)) {
-                        var hueD = (hsv.hue - palette[key].hsv.hue);
-                        if(Math.abs(hueD) > 180) { // We should wrap around
-                            if(hsv.hue > 180) {
-                                hueD = (360-hsv.hue) + palette[key].hsv.hue;
-                            } else {
-                                hueD = ((360-palette[key].hsv.hue) + hsv.hue)*-1;
-                            }
-                            if(Math.abs(hueD) > 10) {
-                                hsv.hue = hsv.hue + hueD/25; // go the opposite way!
-                            }
-                            if(hsv.hue >= 360) { // If we've gone over 360
-                                hsv.hue = hsv.hue - 360; // Wrap it
-                            }
-                            if(hsv.hue < 0) { // If we've gone below 0
-                                hsv.hue = 360 - hsv.hue; // Wrap it
-                            }
-                        } else {
-                            if(Math.abs(hueD) > 10) {
-                                hsv.hue = hsv.hue - hueD/25;
-                            }
-                        }
-                        var satD = (hsv.sat - palette[key].hsv.sat);
-                        if(Math.abs(satD) > 0.05) {
-                            hsv.sat = hsv.sat - satD*0.063;
-                        }
-                        var valD = (hsv.val - palette[key].hsv.val);
-                        if(Math.abs(valD) > 0.05) {
-                            hsv.val = hsv.val - valD*0.063;
-                        }
+        var getAverages = function(palette) {
+            var hueTotal = 0, satTotal = 0, valTotal = 0, totalColors = 0;
+            for(var palKey in palette) {
+                if(palette.hasOwnProperty(palKey)) {
+                    totalColors++;
+                    if(palette[palKey].hsv.hue - hueTotal/totalColors > 180) {
+                        hueTotal += (360 - palette[palKey].hsv.hue + hueTotal/totalColors)*-1;
+                    } else if (hueTotal/totalColors - palette[palKey].hsv.hue > 180) {
+                        hueTotal += 360 + palette[palKey].hsv.hue;
+                    } else {
+                        hueTotal += palette[palKey].hsv.hue;
                     }
+                    satTotal += palette[palKey].hsv.sat;
+                    valTotal += palette[palKey].hsv.val;
                 }
+            }
+            var avgHue = hueTotal/totalColors;
+            if(avgHue >= 360) {
+                avgHue = avgHue % 360;
+            } else if (avgHue < 0) {
+                avgHue = 360 + (avgHue % 360);
+            }
+            if(totalColors == 0) {
+                return false;
+            } else {
                 return {
-                    hex: hsvToRGB(hsv),
-                    hsv: hsv
+                    hue: avgHue,
+                    sat: satTotal/totalColors,
+                    val: valTotal/totalColors,
+                    total: totalColors
                 };
-            },
-            generateDark: function(palette) {
-                var hsv = {
-                    hue: Math.floor(Math.random()*360),
-                    sat: Math.round(Math.random()*100)/100,
-                    val: Math.round(Math.random()*35)/100
-                };
-                for(var key in palette) {
-                    if(palette.hasOwnProperty(key)) {
-                        var hueD = (hsv.hue - palette[key].hsv.hue);
-                        if(Math.abs(hueD) > 180) { // We should wrap around
-                            if(hsv.hue > 180) {
-                                hueD = (360-hsv.hue) + palette[key].hsv.hue;
-                            } else {
-                                hueD = ((360-palette[key].hsv.hue) + hsv.hue)*-1;
-                            }
-                            if(Math.abs(hueD) > 10) {
-                                hsv.hue = hsv.hue + hueD/30; // go the opposite way!
-                            }
-                            if(hsv.hue >= 360) { // If we've gone over 360
-                                hsv.hue = hsv.hue - 360; // Wrap it
-                            }
-                            if(hsv.hue < 0) { // If we've gone below 0
-                                hsv.hue = 360 - hsv.hue; // Wrap it
-                            }
-                        } else {
-                            if(Math.abs(hueD) > 10) {
-                                hsv.hue = hsv.hue - hueD/30;
-                            }
-                        }
-                        var satD = (hsv.sat - palette[key].hsv.sat);
-                        if(Math.abs(satD) > 0.05) {
-                            hsv.sat = hsv.sat - satD*0.093;
-                        }
-                        var valD = (hsv.val - palette[key].hsv.val);
-                        if(Math.abs(valD) > 0.05) {
-                            hsv.val = hsv.val - valD*0.093;
-                        }
+            }
+            
+        };
+        return {
+            generate: function(palette) {
+                var hsv = {};
+                var averages = getAverages(palette);
+                if(averages) {
+                    var hueOffset = Math.floor((Math.random()*720-360) * (1/(averages.total/4)));
+                    var satOffset = Math.random();
+                    var valOffset = Math.random();
+                    if(satOffset > averages.sat) {
+                        satOffset = (satOffset - averages.sat) * (1/(averages.total/6 + 5/6));
+                    } else {
+                        satOffset = satOffset * (1/(averages.total/6 + 5/6)) * -1;
                     }
+                    if(valOffset > averages.val) {
+                        valOffset = (valOffset - averages.val) * (1/(averages.total/6 + 5/6));
+                    } else {
+                        valOffset = valOffset * (1/(averages.total/6 + 5/6)) * -1;
+                    }
+                    hsv = {
+                        hue: averages.hue+hueOffset,
+                        sat: averages.sat+satOffset,
+                        val: averages.val+valOffset
+                    };
+                    if(hsv.hue >= 360) {
+                        hsv.hue = hsv.hue % 360;
+                    } else if (hsv.hue < 0) {
+                        hsv.hue = 360 + (hsv.hue % 360);
+                    }
+                    hsv.sat = Math.round(hsv.sat*100)/100; // Clean up long decimals
+                    hsv.val = Math.round(hsv.val*100)/100;
+                } else {
+                    hsv = {
+                        hue: Math.floor(Math.random()*360),
+                        sat: Math.round(Math.random()*100)/100,
+                        val: Math.round((Math.random()*0.65+0.35)*100)/100
+                    };
                 }
                 return {
                     hex: hsvToRGB(hsv),

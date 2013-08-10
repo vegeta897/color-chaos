@@ -181,51 +181,29 @@ angular.module('ColorChaos.controllers', [])
         
         var drawOnMouseDown = function() {
             // If the mouse button is down or the password is incorrect, cancel
-            if (jQuery.sha256($scope.password) != '7fff319b30405ee286b1baf1d433ccfd53fecd100f8e46c7b1177da800930e69') return; 
-            dimPixel(); // Dim the pixel being drawn on
-            document.getElementById('highlightCanvas').style.cursor = 'none'; // Hide cursor
+            if (jQuery.sha256($scope.password) != '7fff319b30405ee286b1baf1d433ccfd53fecd100f8e46c7b1177da800930e69') return;
+            if(event.which == 3) { event.preventDefault(); return; } // If right click pressed
             if(erasing) {
                 fireRef.child('pixels').child($scope.overPixel[0] + ":" + $scope.overPixel[1]).set(null);
                 return;
             }
+            document.getElementById('highlightCanvas').style.cursor = 'none'; // Hide cursor
+            dimPixel(); // Dim the pixel being drawn on
             // Write the pixel into Firebase
             var randomColor = {hex:'222222'};
             if(!grabbing) { // If we don't have a color grabbed
-                switch(event.which) { // Figure out which mouse button we're pressing
-                    case 1:
-                        // left
-                        for(var i=0; i<3; i++) {
-                            randomColor = utility.generateLight($scope.keptPixels);
-                            addLastColor(randomColor);
-                        }
-                        break;
-                    case 3:
-                        event.preventDefault();
-                        // right
-                        for(var j=0; j<3; j++) {
-                            randomColor = utility.generateDark($scope.keptPixels);
-                            addLastColor(randomColor);
-                        }
-                        break;
-                    default:
-                        // empty
+                if(event.which == 1) { // If left click pressed
+                    for(var i=0; i<3; i++) {
+                        randomColor = utility.generate($scope.keptPixels);
+                        addLastColor(randomColor);
+                    }
                 }
                 if($scope.overPixel[0] != '-') {
-                    switch(keyPressed) {
-                        case 'light':
-                            for(var k=0; k<3; k++) {
-                                randomColor = utility.generateLight($scope.keptPixels);
-                                addLastColor(randomColor);
-                            }
-                            break;
-                        case 'dark':
-                            for(var l=0; l<3; l++) {
-                                randomColor = utility.generateDark($scope.keptPixels);
-                                addLastColor(randomColor);
-                            }
-                            break;
-                        default:
-                        //empty
+                    if(keyPressed) {
+                        for(var k=0; k<3; k++) {
+                            randomColor = utility.generate($scope.keptPixels);
+                            addLastColor(randomColor);
+                        }
                     }
                     keyPressed = false;
                 } else {
@@ -438,20 +416,16 @@ angular.module('ColorChaos.controllers', [])
                     ping();
                     break;
                 case 81: // Q
-                    keyPressed = 'light';
+                    keyPressed = true;
                     jQuery(myCanvas).mousedown();
                     break;
                 case 87: // W
-                    keyPressed = 'dark';
-                    jQuery(myCanvas).mousedown();
                     break;
                 case 67: // C
-                    keyPressed = 'light';
+                    keyPressed = true;
                     jQuery(myCanvas).mousedown();
                     break;
                 case 86: // V
-                    keyPressed = 'dark';
-                    jQuery(myCanvas).mousedown();
                     break;
             }
         };
