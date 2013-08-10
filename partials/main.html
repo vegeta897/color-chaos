@@ -40,7 +40,7 @@
                 <fieldset>
                     <legend>Options</legend>
                     <label class="checkbox">
-                        <input ng-model="verticalHistory" type="checkbox"> Vertical Color History
+                        <input id="vhCheck" ng-change="onOptionChange()" ng-model="verticalHistory" type="checkbox"> Vertical Color History
                     </label>
                 </fieldset>
             </form>

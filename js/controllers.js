@@ -38,11 +38,20 @@ angular.module('ColorChaos.controllers', [])
         if(localStorageService.get('lastPixel')) {
             $scope.lastPixel = localStorageService.get('lastPixel');
         }
+        // Attempt to get verticalHistory from localstorage
+        if(localStorageService.get('verticalHistory')) {
+            $scope.verticalHistory = localStorageService.get('verticalHistory');
+            if($scope.verticalHistory == 'true') { $scope.verticalHistory = true; }
+        }
         // Clear the localstorage
         $scope.clearCache = function() {
             localStorageService.clearAll();
             $scope.authed = false;
             $scope.password = '';
+        };
+        // Update localstorage when an option is changed
+        $scope.onOptionChange = function() {
+            localStorageService.set('verticalHistory', $scope.verticalHistory);
         };
         
         // Set up our canvas
