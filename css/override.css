@@ -6,11 +6,19 @@ h1 {
 }
 
 .no-indent {
-    margin-left: 0px;
+    margin-left: 0;
     margin-right: 20px;
 }
 
+.container {
+    position: relative;
+}
 
+legend {
+    line-height: 32px;
+    margin-bottom: 0.5em;
+    padding-top: 0.2em;
+}
 
 /* Media Queries */
 

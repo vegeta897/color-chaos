@@ -15,8 +15,16 @@
         <canvas id="pingCanvas" width="960" height="800"></canvas> <!-- Ping canvas -->
         <canvas id="highlightCanvas" width="960" height="800"></canvas> <!-- Highlight canvas -->
   	</div>
-    <div class="row" style="height:32px;width:960px;">
+    <div ng-hide="verticalHistory" class="row" style="height:32px;width:960px;">
         <div class="palette-container" ng-repeat="color in lastColors" style="width:40px;height:32px;float:left;">
+            <div class="history-swatch" ng-click="grabColor(color)" style="background:{{ '#'+color.hex }};"></div>
+            <div ng-show="$index < 10" class="history-number">
+                <span ng-show="$index == 9">0</span><span ng-hide="$index == 9">{{ $index+1 }}</span>
+            </div>
+        </div>
+    </div>
+    <div ng-show="verticalHistory" class="vertical-history">
+        <div class="palette-container" ng-repeat="color in lastColors" style="width:28px;height:32px;float:left;">
             <div class="history-swatch" ng-click="grabColor(color)" style="background:{{ '#'+color.hex }};"></div>
             <div ng-show="$index < 10" class="history-number">
                 <span ng-show="$index == 9">0</span><span ng-hide="$index == 9">{{ $index+1 }}</span>
@@ -28,6 +36,14 @@
             <span class="muted">You've changed</span>&nbsp; {{ yourChanges }} pixels<br>
             <span ng-show="allChanges"><span class="muted">Everyone has changed</span>&nbsp; {{ allChanges }} pixels<br></span>
             <span ng-show="allChanges"><span class="muted">Last changed:</span>&nbsp; {{ lastChange | date:'medium' }}</span>
+            <form>
+                <fieldset>
+                    <legend>Options</legend>
+                    <label class="checkbox">
+                        <input ng-model="verticalHistory" type="checkbox"> Vertical Color History
+                    </label>
+                </fieldset>
+            </form>
         </div>
         <div class="span1">
             <button ng-show="keeping" class="btn btn-mini btn-warning" ng-click="clearKept()">Clear</button>

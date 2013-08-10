@@ -21,8 +21,35 @@
 }
 
 .history-swatch {
+    float: left;
     width:40px;
     height:16px;
+}
+
+.history-number {
+    font-size:14px;
+    line-height: 16px;
+    text-align: center;
+}
+
+.vertical-history {
+    height:800px;
+    width:28px;
+    position: absolute;
+    left: 946px;
+    top: 67px;
+}
+
+.vertical-history .history-swatch {
+    width:16px;
+    height:32px;
+}
+
+.vertical-history .history-number {
+    float: right;
+    font-size:14px;
+    line-height: 33.3px;
+    text-align: center;
 }
 
 .kept-swatch {
@@ -36,12 +63,6 @@
     left: -2px;
     border: 2px solid white;
     z-index: 100;
-}
-
-.history-number {
-    font-size:14px;
-    line-height: 16px;
-    text-align: center;
 }
 
 .stats {

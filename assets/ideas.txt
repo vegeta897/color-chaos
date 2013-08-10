@@ -9,3 +9,5 @@ move color weighting into a private function in the utility service
 
 implement firebase simple login for security: https://www.firebase.com/docs/security-quickstart.html
     - then add more canvases and post to public
+
+add instructions
