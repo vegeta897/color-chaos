@@ -104,7 +104,7 @@ angular.module('ColorChaos.services', [])
                     hsv = {
                         hue: Math.floor(Math.random()*360),
                         sat: Math.round(Math.random()*100)/100,
-                        val: Math.round((Math.random()*0.65+0.35)*100)/100
+                        val: Math.round(Math.random()*100)/100
                     };
                 }
                 return {

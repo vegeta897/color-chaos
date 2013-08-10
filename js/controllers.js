@@ -235,6 +235,15 @@ angular.module('ColorChaos.controllers', [])
             }
             localStorageService.set('keptPixels', JSON.stringify($scope.keptPixels));
             
+            
+            // WIP tooltip stuff... put in own function
+//            $timeout(function() {
+//                console.log(jQuery('#palCol'+colorToPlace.hex).attr('title','hey you!').tooltip({placement:'bottom',trigger:'manual'}).tooltip('show'));
+//            },100);
+//            $timeout(function() {
+//                jQuery('#palCol'+colorToPlace.hex).tooltip('destroy');
+//            },2000);
+            
             $scope.yourChanges++; // Update change count
             localStorageService.set('yourChanges', $scope.yourChanges);
             fireRef.child('meta').child('totalDrawn').once('value', function(realTotal) {
