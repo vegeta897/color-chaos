@@ -70,21 +70,32 @@ angular.module('ColorChaos.services', [])
             }
             
         };
+        var flip = function() { // Flip a coin
+            return Math.floor(Math.random()*2) == 1;
+        };
         return {
             generate: function(palette) {
                 var hsv = {};
                 var averages = getAverages(palette);
                 if(averages) {
                     var hueOffset = Math.floor(Math.pow(Math.random(),1+Math.log(averages.total)/Math.LN10 )*180);
-                    if(Math.round(Math.random()) == 1) { hueOffset *= -1; }
-                    var satOffset = Math.pow(Math.random(),1+Math.log(averages.total)/Math.LN10) 
-                        * (averages.sat > 0.5 ? averages.sat : 1-averages.sat);
-                    if(Math.round(Math.random()) == 1) { satOffset *= -1; }
-                    if(averages.sat + satOffset > 1) { satOffset *= -1; }
+                    if(flip()) { hueOffset *= -1; }
+                    var satMin = averages.sat > 0.5? 1-averages.sat : averages.sat;
+                    var satMax = averages.sat > 0.5? averages.sat : 1-averages.sat;
+                    var satOffset = Math.pow(Math.random(),1+Math.log(averages.total)/Math.LN10) * satMax;
+                    if(satOffset > satMin) { // If offset is > min range
+                        if(flip()) { satOffset *= satOffset*(satMin/satMax); } // Resize the offset to the min range
+                        if(flip()) { satOffset *= -1; } // Then see which side of the min to go
+                    }
+                    if(averages.sat + satOffset > 1) { satOffset *= -1; } // Put the offset in the right direction
                         else if(averages.sat + satOffset < 0) { satOffset *= -1; }
-                    var valOffset = Math.pow(Math.random(),1+Math.log(averages.total)/Math.LN10)
-                        * (averages.val > 0.5 ? averages.val : 1-averages.val);
-                    if(Math.round(Math.random()) == 1) { valOffset *= -1; }
+                    var valMin = averages.val > 0.5? 1-averages.val : averages.val;
+                    var valMax = averages.val > 0.5? averages.val : 1-averages.val;
+                    var valOffset = Math.pow(Math.random(),1+Math.log(averages.total)/Math.LN10) * valMax;
+                    if(valOffset > valMin) { // If offset is > min range
+                        if(flip()) { valOffset *= valOffset*(valMin/valMax); } // Resize the offset to the min range
+                        if(flip()) { valOffset *= -1; } // Then see which side of the min to go
+                    }
                     if(averages.val + valOffset > 1) { valOffset *= -1; }
                         else if(averages.val + valOffset < 0) { valOffset *= -1; }
                     hsv = {
@@ -99,6 +110,8 @@ angular.module('ColorChaos.services', [])
                     }
                     hsv.sat = Math.round(hsv.sat*100)/100; // Clean up long decimals
                     hsv.val = Math.round(hsv.val*100)/100;
+                    console.log(hsv.sat, hsv.val);
+                    console.log(averages);
                 } else {
                     hsv = {
                         hue: Math.floor(Math.random()*360),
