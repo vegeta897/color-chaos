@@ -76,23 +76,21 @@ angular.module('ColorChaos.services', [])
                 var averages = getAverages(palette);
                 if(averages) {
                     var hueOffset = Math.floor(Math.pow(Math.random(),1+Math.log(averages.total)/Math.LN10 )*180);
-                    if(Math.round(Math.random()) == 1) {
-                        hueOffset *= -1;
-                    }
-                //    console.log('hue offset:',hueOffset);
-                    var satValOffsetRange = 1/(averages.total/6 + 5/6);
-                    var satOffsetLower = averages.sat - satValOffsetRange;
-                    var satOffsetUpper = averages.sat + satValOffsetRange;
-                    var valOffsetLower = averages.val - satValOffsetRange;
-                    var valOffsetUpper = averages.val + satValOffsetRange;
-                    if(satOffsetLower < 0) { satOffsetLower = 0 }
-                    if(satOffsetUpper > 1) { satOffsetUpper = 1 }
-                    if(valOffsetLower < 0) { valOffsetLower = 0 }
-                    if(valOffsetUpper > 1) { valOffsetUpper = 1 }
+                    if(Math.round(Math.random()) == 1) { hueOffset *= -1; }
+                    var satOffset = Math.pow(Math.random(),1+Math.log(averages.total)/Math.LN10) 
+                        * (averages.sat > 0.5 ? averages.sat : 1-averages.sat);
+                    if(Math.round(Math.random()) == 1) { satOffset *= -1; }
+                    if(averages.sat + satOffset > 1) { satOffset *= -1; }
+                        else if(averages.sat + satOffset < 0) { satOffset *= -1; }
+                    var valOffset = Math.pow(Math.random(),1+Math.log(averages.total)/Math.LN10)
+                        * (averages.val > 0.5 ? averages.val : 1-averages.val);
+                    if(Math.round(Math.random()) == 1) { valOffset *= -1; }
+                    if(averages.val + valOffset > 1) { valOffset *= -1; }
+                        else if(averages.val + valOffset < 0) { valOffset *= -1; }
                     hsv = {
                         hue: averages.hue+hueOffset,
-                        sat: Math.random() * (satOffsetUpper-satOffsetLower) + satOffsetLower,
-                        val: Math.random() * (valOffsetUpper-valOffsetLower) + valOffsetLower
+                        sat: averages.sat+satOffset,
+                        val: averages.val+valOffset
                     };
                     if(hsv.hue >= 360) {
                         hsv.hue = hsv.hue % 360;
