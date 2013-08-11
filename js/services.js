@@ -37,9 +37,12 @@ angular.module('ColorChaos.services', [])
             }).join('');
         };
         var getAverages = function(palette) {
-            var hueTotal = 0, satTotal = 0, valTotal = 0, totalColors = 0;
+            var hueTotal = 0, satTotal = 0, valTotal = 0, totalColors = 0, superColors = 0;
             for(var palKey in palette) {
                 if(palette.hasOwnProperty(palKey)) {
+                    if(palette[palKey].hex == 'superBlack' || palette[palKey].hex == 'superWhite') {
+                        superColors++;
+                    }
                     totalColors++;
                     if(palette[palKey].hsv.hue - hueTotal/totalColors > 180) {
                         hueTotal += (360 - palette[palKey].hsv.hue + hueTotal/totalColors)*-1;
@@ -69,7 +72,7 @@ angular.module('ColorChaos.services', [])
                     hue: avgHue,
                     sat: avgSat,
                     val: avgVal,
-                    total: totalColors
+                    total: totalColors + superColors*50
                 };
             }
             
@@ -85,7 +88,7 @@ angular.module('ColorChaos.services', [])
                         return {
                             special: true,
                             hex: 'superWhite',
-                            hsv: {hue:0,sat:-50,val:50}
+                            hsv: {hue:0,sat:50,val:50}
                         }
                     } else {
                         return {
@@ -100,37 +103,33 @@ angular.module('ColorChaos.services', [])
                 if(averages) {
                     var hueOffset = Math.floor(Math.pow(Math.random(),1+Math.log(averages.total)/Math.LN10 )*180);
                     if(flip()) { hueOffset *= -1; }
-                    var satMin = averages.sat > 0.5? 1-averages.sat : averages.sat;
-                    var satMax = averages.sat > 0.5? averages.sat : 1-averages.sat;
-                    var satOffset = Math.pow(Math.random(),1+Math.log(averages.total)/Math.LN10) * satMax;
-                    if(satOffset > satMin) { // If offset is > min range
-                        if(flip()) { 
-                            satOffset *= satOffset*(satMin/satMax); // Resize the offset to the min range
-                            if(flip()) { satOffset *= -1; } // Then decide which side of the min to go
-                        } 
-                    }
-                    if(averages.sat > 0.5) { satOffset *= -1; } // Put the offset in the right direction
+                    var satMin = averages.sat > 0.5 ? 1-averages.sat : averages.sat;
+                    var satMax = averages.sat > 0.5 ? averages.sat : 1-averages.sat;
+                    var satOffset = Math.pow(Math.random(),1+Math.log(averages.total)/Math.LN10) * satMax + Math.random()*0.2;
+                    if(averages.sat > 0.5) { satOffset *= -1; }
+                    if(Math.random()<satMin) { satOffset *= -1; }
+                    if(flip()) { satOffset *= -1; }
                     var valMin = averages.val > 0.5? 1-averages.val : averages.val;
                     var valMax = averages.val > 0.5? averages.val : 1-averages.val;
-                    var valOffset = Math.pow(Math.random(),1+Math.log(averages.total)/Math.LN10) * valMax;
-                    if(valOffset > valMin) { // If offset is > min range
-                        if(flip()) { 
-                            valOffset *= valOffset*(valMin/valMax); // Resize the offset to the min range
-                            if(flip()) { valOffset *= -1; } // Then decide which side of the min to go
-                        }
-                    }
-                    if(averages.val > 0.5) { valOffset *= -1; } // Put the offset in the right direction
+                    var valOffset = Math.pow(Math.random(),1+Math.log(averages.total)/Math.LN10) * valMax + Math.random()*0.2;
+                    if(averages.val > 0.5) { valOffset *= -1; }
+                    if(Math.random()<valMin) { valOffset *= -1; }
                     hsv = {
                         hue: averages.hue+hueOffset,
                         sat: averages.sat+satOffset,
                         val: averages.val+valOffset
                     };
+                    if(hsv.sat > 1) { hsv.sat = 1-hsv.sat%1; }
+                    if(hsv.sat < 0) { hsv.sat = -1*(hsv.sat%-1); }
+                    if(hsv.val > 1) { hsv.val = 1-hsv.val%1; }
+                    if(hsv.val < 0) { hsv.val = -1*(hsv.val%-1); }
                     if(hsv.hue >= 360) {
                         hsv.hue = hsv.hue % 360;
                     } else if (hsv.hue < 0) {
                         hsv.hue = 360 + (hsv.hue % 360);
                     }
-                    hsv.sat = Math.round(hsv.sat*100)/100; // Clean up long decimals
+                    hsv.hue = Math.round(hsv.hue*100)/100; // Clean up long decimals
+                    hsv.sat = Math.round(hsv.sat*100)/100;
                     hsv.val = Math.round(hsv.val*100)/100;
                 } else {
                     hsv = {
