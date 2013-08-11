@@ -105,13 +105,13 @@ angular.module('ColorChaos.services', [])
                     if(flip()) { hueOffset *= -1; }
                     var satMin = averages.sat > 0.5 ? 1-averages.sat : averages.sat;
                     var satMax = averages.sat > 0.5 ? averages.sat : 1-averages.sat;
-                    var satOffset = Math.pow(Math.random(),1+Math.log(averages.total)/Math.LN10) * satMax + Math.random()*0.2;
+                    var satOffset = Math.pow(Math.random(),1+Math.log(averages.total)/Math.LN10) * satMax - Math.random()*0.2;
                     if(averages.sat > 0.5) { satOffset *= -1; }
                     if(Math.random()<satMin) { satOffset *= -1; }
                     if(flip()) { satOffset *= -1; }
                     var valMin = averages.val > 0.5? 1-averages.val : averages.val;
                     var valMax = averages.val > 0.5? averages.val : 1-averages.val;
-                    var valOffset = Math.pow(Math.random(),1+Math.log(averages.total)/Math.LN10) * valMax + Math.random()*0.2;
+                    var valOffset = Math.pow(Math.random(),1+Math.log(averages.total)/Math.LN10) * valMax - Math.random()*0.2;
                     if(averages.val > 0.5) { valOffset *= -1; }
                     if(Math.random()<valMin) { valOffset *= -1; }
                     hsv = {
