@@ -83,7 +83,7 @@ angular.module('ColorChaos.services', [])
         return {
             generate: function(palette) {
                 var hsv = {};
-                if(Math.random() < 0.002) { // 1 in 500 chance of super color
+                if(Math.random() < 0.001) { // 1 in 1000 chance of super color
                     if(flip()) {
                         return {
                             special: true,
