@@ -75,7 +75,11 @@ angular.module('ColorChaos.services', [])
                 var hsv = {};
                 var averages = getAverages(palette);
                 if(averages) {
-                    var hueOffset = Math.floor((Math.random()*720-360) * (1/(averages.total/4)));
+                    var hueOffset = Math.floor(Math.pow(Math.random(),1+Math.log(averages.total)/Math.LN10 )*180);
+                    if(Math.round(Math.random()) == 1) {
+                        hueOffset *= -1;
+                    }
+                //    console.log('hue offset:',hueOffset);
                     var satValOffsetRange = 1/(averages.total/6 + 5/6);
                     var satOffsetLower = averages.sat - satValOffsetRange;
                     var satOffsetUpper = averages.sat + satValOffsetRange;
