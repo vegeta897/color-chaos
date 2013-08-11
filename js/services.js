@@ -76,22 +76,19 @@ angular.module('ColorChaos.services', [])
                 var averages = getAverages(palette);
                 if(averages) {
                     var hueOffset = Math.floor((Math.random()*720-360) * (1/(averages.total/4)));
-                    var satOffset = Math.random();
-                    var valOffset = Math.random();
-                    if(satOffset > averages.sat) {
-                        satOffset = (satOffset - averages.sat) * (1/(averages.total/6 + 5/6));
-                    } else {
-                        satOffset = satOffset * (1/(averages.total/6 + 5/6)) * -1;
-                    }
-                    if(valOffset > averages.val) {
-                        valOffset = (valOffset - averages.val) * (1/(averages.total/6 + 5/6));
-                    } else {
-                        valOffset = valOffset * (1/(averages.total/6 + 5/6)) * -1;
-                    }
+                    var satValOffsetRange = 1/(averages.total/6 + 5/6);
+                    var satOffsetLower = averages.sat - satValOffsetRange;
+                    var satOffsetUpper = averages.sat + satValOffsetRange;
+                    var valOffsetLower = averages.val - satValOffsetRange;
+                    var valOffsetUpper = averages.val + satValOffsetRange;
+                    if(satOffsetLower < 0) { satOffsetLower = 0 }
+                    if(satOffsetUpper > 1) { satOffsetUpper = 1 }
+                    if(valOffsetLower < 0) { valOffsetLower = 0 }
+                    if(valOffsetUpper > 1) { valOffsetUpper = 1 }
                     hsv = {
                         hue: averages.hue+hueOffset,
-                        sat: averages.sat+satOffset,
-                        val: averages.val+valOffset
+                        sat: Math.random() * (satOffsetUpper-satOffsetLower) + satOffsetLower,
+                        val: Math.random() * (valOffsetUpper-valOffsetLower) + valOffsetLower
                     };
                     if(hsv.hue >= 360) {
                         hsv.hue = hsv.hue % 360;
