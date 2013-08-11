@@ -360,7 +360,22 @@ angular.module('ColorChaos.controllers', [])
         // Note that child_added events will be fired for initial pixel data as well
         var drawPixel = function(snapshot) {
             var coords = snapshot.name().split(":");
-            myContext.fillStyle = "#" + snapshot.val();
+            if(snapshot.val() == 'superBlack' || snapshot.val() == 'superWhite') {
+                var my_gradient = myContext.createRadialGradient(
+                    coords[0]*pixSize + pixSize/2, coords[1]*pixSize + pixSize/2, 5,
+                    coords[0]*pixSize + pixSize/2, coords[1]*pixSize + pixSize/2, 0
+                );
+                if(snapshot.val() == 'superBlack') {
+                    my_gradient.addColorStop(0, "#222222");
+                    my_gradient.addColorStop(1, "#000000");
+                } else {
+                    my_gradient.addColorStop(0, "#222222");
+                    my_gradient.addColorStop(1, "#FFFFFF");
+                }
+                myContext.fillStyle = my_gradient;
+            } else {
+                myContext.fillStyle = "#" + snapshot.val();
+            }
             myContext.fillRect(parseInt(coords[0]) * pixSize, parseInt(coords[1]) * pixSize, pixSize, pixSize);
         };
         // Erase a pixel

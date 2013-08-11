@@ -53,18 +53,22 @@ angular.module('ColorChaos.services', [])
                 }
             }
             var avgHue = hueTotal/totalColors;
+            var avgSat = satTotal/totalColors;
+            var avgVal = valTotal/totalColors;
             if(avgHue >= 360) {
                 avgHue = avgHue % 360;
             } else if (avgHue < 0) {
                 avgHue = 360 + (avgHue % 360);
             }
+            if(avgSat > 1) { avgSat = 1; } else if(avgSat < 0) { avgSat = 0; }
+            if(avgVal > 1) { avgVal = 1; } else if(avgVal < 0) { avgVal = 0; }
             if(totalColors == 0) {
                 return false;
             } else {
                 return {
                     hue: avgHue,
-                    sat: satTotal/totalColors,
-                    val: valTotal/totalColors,
+                    sat: avgSat,
+                    val: avgVal,
                     total: totalColors
                 };
             }
@@ -76,6 +80,22 @@ angular.module('ColorChaos.services', [])
         return {
             generate: function(palette) {
                 var hsv = {};
+                if(Math.random() < 0.002) { // 1 in 500 chance of super color
+                    if(flip()) {
+                        return {
+                            special: true,
+                            hex: 'superWhite',
+                            hsv: {hue:0,sat:-50,val:50}
+                        }
+                    } else {
+                        return {
+                            special: true,
+                            hex: 'superBlack',
+                            hsv: {hue:0,sat:-50,val:-50}
+                        }
+                    }
+                    
+                }
                 var averages = getAverages(palette);
                 if(averages) {
                     var hueOffset = Math.floor(Math.pow(Math.random(),1+Math.log(averages.total)/Math.LN10 )*180);

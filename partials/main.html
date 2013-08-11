@@ -17,7 +17,9 @@
   	</div>
     <div ng-hide="verticalHistory" class="row" style="height:32px;width:960px;">
         <div data-toggle="tooltip" id="palCol{{ color.hex }}" class="palette-container" ng-repeat="color in lastColors" style="width:40px;height:32px;float:left;">
-            <div class="history-swatch" ng-click="grabColor(color)" style="background:{{ '#'+color.hex }};"></div>
+            <div ng-hide="color.special" class="history-swatch" ng-click="grabColor(color)" style="background:{{ '#'+color.hex }};"></div>
+            <div ng-show="color.hex=='superWhite'" class="history-swatch" ng-click="grabColor(color)" style="color:#000000;background:#FFFFFF;"><i class="icon-star"></i></div>
+            <div ng-show="color.hex=='superBlack'" class="history-swatch" ng-click="grabColor(color)" style="color:#FFFFFF;background:#000000;"><i class="icon-star icon-white"></i></div>
             <div ng-show="$index < 10" class="history-number">
                 <span ng-show="$index == 9">0</span><span ng-hide="$index == 9">{{ $index+1 }}</span>
             </div>
@@ -25,7 +27,9 @@
     </div>
     <div ng-show="verticalHistory" class="vertical-history">
         <div class="palette-container" ng-repeat="color in lastColors" style="width:28px;height:32px;float:left;">
-            <div class="history-swatch" ng-click="grabColor(color)" style="background:{{ '#'+color.hex }};"></div>
+            <div ng-hide="color.special" class="history-swatch" ng-click="grabColor(color)" style="background:{{ '#'+color.hex }};"></div>
+            <div ng-show="color.hex=='superWhite'" class="history-swatch" ng-click="grabColor(color)" style="background:#FFFFFF;"><i class="icon-star"></i></div>
+            <div ng-show="color.hex=='superBlack'" class="history-swatch" ng-click="grabColor(color)" style="background:#000000;"><i class="icon-star icon-white"></i></div>
             <div ng-show="$index < 10" class="history-number">
                 <span ng-show="$index == 9">0</span><span ng-hide="$index == 9">{{ $index+1 }}</span>
             </div>
@@ -50,7 +54,9 @@
         </div>
         <div class="span6">
             <div class="palette-container" ng-repeat="color in keptPixels" ng-click="removeKept(color.id)" ng-mouseenter="hoverKept(color.id)" ng-mouseleave="unhoverKept(color.id)" style="width:16px;height:16px;float:left;">
-                <div ng-class="{'kept-hover': color.hover}" class="kept-swatch" style="background:{{ '#'+color.hex }};"></div>
+                <div ng-hide="color.special" ng-class="{'kept-hover': color.hover}" class="kept-swatch" style="background:{{ '#'+color.hex }};"></div>
+                <div ng-show="color.hex=='superWhite'" ng-class="{'kept-hover': color.hover}" class="kept-swatch" style="background:#FFFFFF;"><i class="icon-star"></i></div>
+                <div ng-show="color.hex=='superBlack'" ng-class="{'kept-hover': color.hover}" class="kept-swatch" style="background:#000000;"><i class="icon-star icon-white"></i></div>
             </div>
         </div>
         <div class="span1 text-right pull-right coords">{{ overPixel[0] }} , {{ overPixel[1] }}<br>
