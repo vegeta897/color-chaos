@@ -50,15 +50,15 @@ angular.module('ColorChaos.services', [])
                         } else {
                             hueTotal += palette[palKey].hsv.hue;
                         }
+                        totalColors++;
                     }
-                    totalColors++;
                     satTotal += palette[palKey].hsv.sat;
                     valTotal += palette[palKey].hsv.val;
                 }
             }
-            var avgHue = hueTotal/totalColors;
-            var avgSat = satTotal/totalColors;
-            var avgVal = valTotal/totalColors;
+            var avgHue = hueTotal/(totalColors+superColors);
+            var avgSat = satTotal/(totalColors+superColors);
+            var avgVal = valTotal/(totalColors+superColors);
             if(avgHue >= 360) {
                 avgHue = avgHue % 360;
             } else if (avgHue < 0) {
@@ -66,7 +66,7 @@ angular.module('ColorChaos.services', [])
             }
             if(avgSat > 1) { avgSat = 1; } else if(avgSat < 0) { avgSat = 0; }
             if(avgVal > 1) { avgVal = 1; } else if(avgVal < 0) { avgVal = 0; }
-            if(totalColors == 0) {
+            if(totalColors+superColors == 0) {
                 return false;
             } else {
                 return {
