@@ -42,15 +42,16 @@ angular.module('ColorChaos.services', [])
                 if(palette.hasOwnProperty(palKey)) {
                     if(palette[palKey].hex == 'superBlack' || palette[palKey].hex == 'superWhite') {
                         superColors++;
+                    } else {
+                        if(palette[palKey].hsv.hue - hueTotal/totalColors > 180) {
+                            hueTotal += (360 - palette[palKey].hsv.hue + hueTotal/totalColors)*-1;
+                        } else if (hueTotal/totalColors - palette[palKey].hsv.hue > 180) {
+                            hueTotal += 360 + palette[palKey].hsv.hue;
+                        } else {
+                            hueTotal += palette[palKey].hsv.hue;
+                        }
                     }
                     totalColors++;
-                    if(palette[palKey].hsv.hue - hueTotal/totalColors > 180) {
-                        hueTotal += (360 - palette[palKey].hsv.hue + hueTotal/totalColors)*-1;
-                    } else if (hueTotal/totalColors - palette[palKey].hsv.hue > 180) {
-                        hueTotal += 360 + palette[palKey].hsv.hue;
-                    } else {
-                        hueTotal += palette[palKey].hsv.hue;
-                    }
                     satTotal += palette[palKey].hsv.sat;
                     valTotal += palette[palKey].hsv.val;
                 }
