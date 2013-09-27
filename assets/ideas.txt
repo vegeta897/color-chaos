@@ -7,8 +7,7 @@ finish jukebox
 
 move color weighting into a private function in the utility service
 
-implement firebase simple login for security: https://www.firebase.com/docs/security-quickstart.html
-    - then add more canvases and post to public
+add another canvas and post to public?
 
 add instructions
 
@@ -19,5 +18,3 @@ add RPG type effects popping up based on how the color algo went. Like if the of
     hue critical hit, saturation critical hit, value critical hit, combos, all 3, etc
 
 add chance for "super accurate" special pixel, shows as rainbow gradient on canvas, increases totalColors value
-
-ignore hue value when adding superWhite or superBlack

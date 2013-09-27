@@ -98,7 +98,6 @@ angular.module('ColorChaos.services', [])
                             hsv: {hue:0,sat:-50,val:-50}
                         }
                     }
-                    
                 }
                 var averages = getAverages(palette);
                 if(averages) {

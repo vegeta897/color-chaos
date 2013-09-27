@@ -9,15 +9,34 @@
 
 .top-bar {
     padding-top: 10px;
-    text-align: right;
+}
+
+.top-bar h1 {
+    margin-top: 0;
+}
+
+.top-bar p {
+    line-height: 30px;
+}
+
+.top-bar strong {
+    color: #d4dae2;
+}
+
+.top-bar form {
+    margin: 0;
 }
 
 .top-bar button.btn {
     margin-left: 8px;
 }
 
-.top-bar input.input-small {
+.top-bar input.input-medium {
     margin-bottom: 0;
+}
+
+.top-bar input.error {
+    border-color: red;
 }
 
 .history-swatch {
@@ -80,3 +99,28 @@ div.coords {
     width: 75px;
     margin-left: 5px;
 }
+
+/* Bootstrap overrides */
+
+h1 {
+    font-size: 28px;
+    line-height: 30px;
+}
+
+.no-indent {
+    margin-left: 0;
+    margin-right: 20px;
+}
+
+.container {
+    position: relative;
+}
+
+legend {
+    line-height: 32px;
+    margin-bottom: 0.5em;
+    padding-top: 0.2em;
+}
+
+/* Media Queries */
+

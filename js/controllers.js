@@ -7,48 +7,30 @@ angular.module('ColorChaos.controllers', [])
         $scope.lastColors = []; // Tracking your last colors
         $scope.overPixel = ['-','-']; // Tracking your coordinates'
         $scope.lastPixel = ['-','-']; // Tracking last pixel placed coordinates
-        $scope.password = '';
         $scope.keptPixels = {}; // Tracking pixels kept
         $scope.keeping = false;
+        $scope.authStatus = '';
         var pixSize = 10, mouseDown = 0, grabbing = false, erasing = false, keyPressed = false, keyUpped = true, colorToPlace = '', pinging = false;
         
         // Authentication
         $scope.authenticate = function() {
-            if(jQuery.sha256($scope.password) === '7fff319b30405ee286b1baf1d433ccfd53fecd100f8e46c7b1177da800930e69') {
-                localStorageService.set('password', $scope.password);
-                localStorageService.set()
-                $scope.authed = true;
-            }
+            $scope.authStatus = 'logging';
+            auth.login('password', {email: $scope.email, password: $scope.password, rememberMe: true});
         };
-     //   localStorageService.remove('keptPixels');
-        // Attempt auth if user has a password in his localstorage
-        if(localStorageService.get('password')) {
-            $scope.password = localStorageService.get('password');
-            $scope.authenticate(); // Check for auth
-        }
-        // Attempt to get yourChanges count from localstorage
-        if(localStorageService.get('yourChanges')) {
-            $scope.yourChanges = localStorageService.get('yourChanges');
-        }
-        // Attempt to get keptPixels from localstorage
-        if(localStorageService.get('keptPixels')) {
-            $scope.keptPixels = localStorageService.get('keptPixels');
-        }
-        // Attempt to get lastPixel from localstorage
-        if(localStorageService.get('lastPixel')) {
-            $scope.lastPixel = localStorageService.get('lastPixel');
+        $scope.logOut = function() {
+            auth.logout();
+        };
+        
+        // Attempt to get these variables from localstorage
+        var localStores = ['yourChanges','keptPixels','lastPixel'];
+        for(var i = 0; i < localStores.length; i++) {
+            if(localStorageService.get(localStores[i])) {
+                $scope[localStores[i]] = localStorageService.get(localStores[i]);
+            }
         }
         // Attempt to get verticalHistory from localstorage
-        if(localStorageService.get('verticalHistory')) {
-            $scope.verticalHistory = localStorageService.get('verticalHistory');
-            if($scope.verticalHistory == 'true') { $scope.verticalHistory = true; }
-        }
-        // Clear the localstorage
-        $scope.clearCache = function() {
-            localStorageService.clearAll();
-            $scope.authed = false;
-            $scope.password = '';
-        };
+        if(localStorageService.get('verticalHistory') == 'true') { $scope.verticalHistory = true; }
+        
         // Update localstorage when an option is changed
         $scope.onOptionChange = function() {
             localStorageService.set('verticalHistory', $scope.verticalHistory);
@@ -78,6 +60,36 @@ angular.module('ColorChaos.controllers', [])
         
         // Create a reference to the pixel data for our canvas
         var fireRef = new Firebase('https://color-chaos.firebaseio.com/canvas1');
+        // Create a reference to the auth service for our data
+        var auth = new FirebaseSimpleLogin(fireRef, function(error, user) {
+            $timeout(function() {
+                if(error) {
+                    console.log(error);
+                    if(error.code == 'INVALID_USER') {
+                        auth.createUser($scope.email, $scope.password, function(createdError, createdUser) {
+                            if(createdError) {
+                                console.log(createdError);
+                            } else {
+                                console.log(createdUser);
+                                $scope.user = createdUser;
+                                $scope.authStatus = 'logged';
+                            }
+                        })
+                    } else if(error.code == 'INVALID_PASSWORD') {
+                        $scope.authStatus = 'badPass';
+                    } else if(error.code == 'INVALID_EMAIL') {
+                        $scope.authStatus = 'badEmail';
+                    }
+                } else if(user) {
+                    console.log(user);
+                    $scope.authStatus = 'logged';
+                    $scope.user = user;
+                } else {
+                    console.log('logged out');
+                    $scope.authStatus = 'notLogged';
+                }
+            });
+        });
 
         // Get the totalDrawn Amount
         var getTotalDrawn = function() {
@@ -153,7 +165,7 @@ angular.module('ColorChaos.controllers', [])
         // Clear out kept pixels pool
         $scope.clearKept = function() {
             $scope.keptPixels = {};
-            localStorageService.set('keptPixels', JSON.stringify($scope.keptPixels));
+            localStorageService.set('keptPixels', angular.copy($scope.keptPixels));
             $scope.keeping = false;
             $timeout(function(){ alignCanvases(); }, 200); // Realign canvases
         };
@@ -162,7 +174,7 @@ angular.module('ColorChaos.controllers', [])
             $scope.unhoverKept(colorId); // Dim the pixel
             delete $scope.keptPixels[colorId];
             checkEmptyKept();
-            localStorageService.set('keptPixels', JSON.stringify($scope.keptPixels));
+            localStorageService.set('keptPixels', angular.copy($scope.keptPixels));
             $timeout(function(){ alignCanvases(); }, 200); // Realign canvases
         };
         // Highlight pixel on canvas when hovering over pool
@@ -180,8 +192,7 @@ angular.module('ColorChaos.controllers', [])
         };
         
         var drawOnMouseDown = function() {
-            // If the mouse button is down or the password is incorrect, cancel
-            if (jQuery.sha256($scope.password) != '7fff319b30405ee286b1baf1d433ccfd53fecd100f8e46c7b1177da800930e69') return;
+            if($scope.authStatus != 'logged') { return; } // If not authed
             if(event.which == 3) { event.preventDefault(); return; } // If right click pressed
             if(erasing) {
                 fireRef.child('pixels').child($scope.overPixel[0] + ":" + $scope.overPixel[1]).set(null);
@@ -230,10 +241,10 @@ angular.module('ColorChaos.controllers', [])
                     $scope.keptPixels[$scope.overPixel[0] + ":" + $scope.overPixel[1]] = colorToPlace;
                     $scope.keptPixels[$scope.overPixel[0] + ":" + $scope.overPixel[1]].id = $scope.overPixel[0] + ":" + $scope.overPixel[1];
                     $scope.lastPixel = [$scope.overPixel[0],$scope.overPixel[1]];
-                    localStorageService.set('lastPixel', JSON.stringify($scope.lastPixel));
+                    localStorageService.set('lastPixel', angular.copy($scope.lastPixel));
                 }
             }
-            localStorageService.set('keptPixels', JSON.stringify($scope.keptPixels));
+            localStorageService.set('keptPixels', angular.copy($scope.keptPixels));
             
             
             // WIP tooltip stuff... put in own function

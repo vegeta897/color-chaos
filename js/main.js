@@ -1,4 +1,4 @@
-angular.module('ColorChaos', ['ColorChaos.controllers', 'ColorChaos.services', 'ColorChaos.directives', 'firebase', 'LocalStorageModule'])
+angular.module('ColorChaos', ['ColorChaos.controllers', 'ColorChaos.services', 'ColorChaos.directives', 'LocalStorageModule'])
 	.config(['$routeProvider', function($routeProvider) { // Set up URL page routing
 		$routeProvider.
 			when('/', {templateUrl: 'partials/main.html', controller: 'ColorGrid'}). // Main page

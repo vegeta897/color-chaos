@@ -1,10 +1,17 @@
 <div class="container">
-  	<div class="row">
+  	<div class="row top-bar">
 	  	<h1 class="span3 no-indent">Color Chaos</h1>
-        <div class="span9 top-bar">
-            <input ng-hide="authed" placeholder="password" type="text" class="input-small" ng-model="password">
-            <button ng-hide="authed" class="btn btn-info" ng-click="authenticate()">Let me draw!</button>
-            <button class="btn btn-danger" ng-click="clearCache()"><i class="icon-white icon-exclamation-sign"></i></button>
+        <div ng-show="user" class="span7 text-right">
+            <p>Welcome back, <strong>{{ user.email }}</strong> &mdash; <a href="#" ng-click="logOut()">Log out</a></p>
+        </div>
+        <div ng-show="!user && authStatus" class="span7 text-right">
+            <form data-login-form="{{ authStatus }}" ng-disabled="authStatus=='logging'" ng-submit="authenticate()">
+                <input id="inputLoginUser" ng-disabled="authStatus=='logging'" placeholder="email" type="text" class="input-medium" ng-model="email">
+                <input id="inputLoginPass" ng-disabled="authStatus=='logging'" placeholder="password" type="password" class="input-medium" ng-model="password">
+                <button id="loginSubmit" ng-disabled="authStatus=='logging'" class="btn btn-info" ng-click="authenticate()">Log In</button>
+            </form>
+        </div>
+        <div class="span2 pull-right text-right">
             <button class="btn" ng-click="saveToImg()">Save Image</button>
         </div>
   	</div>
