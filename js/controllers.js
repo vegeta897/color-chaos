@@ -201,6 +201,7 @@ angular.module('ColorChaos.controllers', [])
             document.getElementById('highlightCanvas').style.cursor = 'none'; // Hide cursor
             dimPixel(); // Dim the pixel being drawn on
             // Write the pixel into Firebase
+            console.log(event);
             var randomColor = {hex:'222222'};
             if(!grabbing) { // If we don't have a color grabbed
                 if(event.which == 1) { // If left click pressed
@@ -356,15 +357,9 @@ angular.module('ColorChaos.controllers', [])
             pingContext.clearRect(coords[0] * pixSize - 15 + pixSize/2, coords[1] * pixSize - 15 + pixSize/2, 30, 30);
         };
         
-        // When the mouse button is pressed (on the highCanvas)
-        var overMouseDown = function() {
-            jQuery(myCanvas).mousedown(); // Echo the event to the real canvas
-        };
-        
         jQuery(highCanvas).mousemove(onMouseMove);
         jQuery(highCanvas).mouseout(onMouseOut);
-        jQuery(highCanvas).mousedown(overMouseDown); // Will send to real canvas
-        jQuery(myCanvas).mousedown(drawOnMouseDown);
+        jQuery(highCanvas).mousedown(drawOnMouseDown);
         jQuery(window).resize(alignCanvases); // Re-align canvases on window resize
 
         // Add callbacks that are fired any time the pixel data changes and adjusts the canvas appropriately
