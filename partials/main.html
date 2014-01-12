@@ -8,7 +8,7 @@
             <form data-login-form="{{ authStatus }}" ng-disabled="authStatus=='logging'" ng-submit="authenticate()">
                 <input id="inputLoginUser" ng-disabled="authStatus=='logging'" placeholder="email" type="text" class="input-medium" ng-model="email">
                 <input id="inputLoginPass" ng-disabled="authStatus=='logging'" placeholder="password" type="password" class="input-medium" ng-model="password">
-                <button id="loginSubmit" ng-disabled="authStatus=='logging'" class="btn btn-info" ng-click="authenticate()">Log In</button>
+                <button id="loginSubmit" ng-disabled="authStatus=='logging'" type="submit" class="btn btn-info">Log In / Register</button>
             </form>
         </div>
         <div class="span2 pull-right text-right">

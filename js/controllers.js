@@ -104,14 +104,14 @@ angular.module('ColorChaos.controllers', [])
         getTotalDrawn();
         
         // Keep track of if the mouse is up or down
-        highCanvas.onmousedown = function() { 
+        highCanvas.onmousedown = function(event) { 
             mouseDown = 1; 
             if(event.which == 2) {
                 erasing = true;
             }
             return false; 
         };
-        highCanvas.onmouseout = highCanvas.onmouseup = function() {
+        highCanvas.onmouseout = highCanvas.onmouseup = function(event) {
             if(event.which == 2) {
                 erasing = false;
             }
@@ -191,7 +191,7 @@ angular.module('ColorChaos.controllers', [])
             highContext.clearRect(coords[0]*pixSize-1,coords[1]*pixSize-1,pixSize+2,pixSize+2);
         };
         
-        var drawOnMouseDown = function() {
+        var drawOnMouseDown = function(event) {
             if($scope.authStatus != 'logged') { return; } // If not authed
             if(event.which == 3) { event.preventDefault(); return; } // If right click pressed
             if(erasing) {

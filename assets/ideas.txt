@@ -9,7 +9,7 @@ move color weighting into a private function in the utility service
 
 add another canvas and post to public?
 
-add instructions
+add instructions (via joyride?)
 
 
 ========== NEW COLOR WEIGHTING ALGORITHM ==========
