@@ -136,14 +136,14 @@ angular.module('ColorChaos.controllers', [])
                 if($scope.lastColors[c]) {
                     grabbing = true;
                     colorToPlace = $scope.lastColors[c];
-                    jQuery(myCanvas).mousedown();
+                    jQuery(highCanvas).mousedown();
                 }
             } else {
                 for(var i = 0; i<$scope.lastColors.length; i++) {
                     if($scope.lastColors[i] == c) {
                         grabbing = true;
                         colorToPlace = c;
-                        jQuery(myCanvas).mousedown();
+                        jQuery(highCanvas).mousedown();
                         break;
                     }
                 }
@@ -286,7 +286,7 @@ angular.module('ColorChaos.controllers', [])
                     $scope.overPixel = [x,y]; // Update the pixel location we're now over
                 });
                 if(erasing) {
-                    jQuery(myCanvas).mousedown();
+                    jQuery(highCanvas).mousedown();
                 }
                 highlightPixel(); // Highlight this pixel
             }
@@ -447,13 +447,13 @@ angular.module('ColorChaos.controllers', [])
                     break;
                 case 81: // Q
                     keyPressed = true;
-                    jQuery(myCanvas).mousedown();
+                    jQuery(highCanvas).mousedown();
                     break;
                 case 87: // W
                     break;
                 case 67: // C
                     keyPressed = true;
-                    jQuery(myCanvas).mousedown();
+                    jQuery(highCanvas).mousedown();
                     break;
                 case 86: // V
                     break;
